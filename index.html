@@ -212,6 +212,17 @@
   .photo-thumb .photo-x{ position:absolute; top:3px; right:3px; width:22px; height:22px; border-radius:50%; border:none; background:rgba(0,0,0,.6); color:#fff; font-size:13px; line-height:22px; padding:0; cursor:pointer; }
   .photo-add{ aspect-ratio:1/1; border-radius:12px; border:2px dashed var(--border); background:var(--surface); color:var(--muted); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; }
   .photo-add span{ font-size:22px; line-height:1; }
+  .data-note{ font-size:12px; font-weight:600; color:var(--muted); text-align:center; margin:12px 4px 0; line-height:1.4; }
+  #historyTodayRow .stat{ border:2px solid var(--sage); }
+  .row-right{ display:inline-flex; align-items:center; gap:2px; }
+  .row-actions{ display:inline-flex; gap:0; margin-left:6px; }
+  .row-act{ width:30px; height:30px; border:none; background:transparent; color:var(--muted); display:inline-flex; align-items:center; justify-content:center; border-radius:50%; cursor:pointer; padding:0; }
+  .row-act svg{ width:17px; height:17px; }
+  .row-act.del{ color:var(--danger); }
+  .field input.big-dt{ display:block; width:100%; min-width:0; box-sizing:border-box; min-height:68px; padding:22px 24px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:29px; font-weight:600; font-family:inherit; }
+  .edit-sub{ font-size:12px; font-weight:700; color:var(--muted); margin:0 0 4px 4px; }
+  .edit-two{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .log-window{ font-size:11px; font-weight:700; opacity:.75; margin-left:6px; text-transform:none; letter-spacing:0; }
   .fold-head{ display:flex; align-items:center; justify-content:space-between; width:100%; background:none; border:none; padding:0 0 6px; cursor:pointer; font-family:inherit; color:var(--muted); text-align:left; }
   .fold-head .feedings-log-title{ margin:0; }
   .fold-head .fold-count{ font-size:12px; font-weight:800; margin-left:8px; color:var(--muted); opacity:.8; }
@@ -318,6 +329,10 @@
   .feedings-empty{ text-align:center; padding:14px 6px; color:var(--muted); font-size:13px; }
   .graph-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 12px; box-shadow:var(--shadow); }
   .graph-card svg{ width:100%; height:140px; display:block; }
+  .graph-card svg.week-cal{ height:auto; }
+  .week-legend{ display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center; margin-top:10px; font-size:12px; font-weight:700; color:var(--muted); }
+  .week-legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+  .week-info{ text-align:center; font-size:13px; font-weight:700; color:var(--text); margin-top:8px; min-height:18px; }
 </style>
 </head>
 <body>
@@ -419,6 +434,14 @@
 
 <div class="app" id="view-history" style="display:none;">
   <div class="section" style="margin-top:20px;">
+    <div class="section-head"><h2 style="font-size:20px;margin:0;">Today <span class="log-window" style="font-size:13px;">since midnight</span></h2></div>
+    <div class="stat-row" id="historyTodayRow" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat"><div class="label">Feeding sessions</div><div class="value" id="todaySessions">0</div></div>
+      <div class="stat"><div class="label">Diapers</div><div class="value" id="todayDiapers">0</div></div>
+      <div class="stat"><div class="label">Total feeding</div><div class="value" id="todayFeedTotal">0m</div></div>
+    </div>
+  </div>
+  <div class="section" style="margin-top:20px;">
     <div class="section-head"><h2 style="font-size:20px;margin:0;">Last <input type="number" id="historyDays" class="days-input" min="1" max="3650" inputmode="numeric" value="30" oninput="setHistoryDays(this.value)" onchange="commitHistoryDays(this)" aria-label="Number of days to show"> days</h2></div>
     <div class="stat-row" id="historyAvgRow" style="grid-template-columns:repeat(3,1fr);">
       <div class="stat"><div class="label">Avg feedings/day</div><div class="value" id="avgFeeds">0</div></div>
@@ -441,6 +464,14 @@
   <div class="section">
     <div class="section-head"><div class="section-title">Diapers per day</div></div>
     <div class="graph-card"><svg id="diaperGraphSvg" viewBox="0 0 320 140" preserveAspectRatio="none"></svg></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="section-title">Feedings · last 7 days</div></div>
+    <div class="graph-card">
+      <svg id="weekCalSvg" class="week-cal" viewBox="0 0 340 712" role="img" aria-label="Calendar chart of feedings over the last 7 days"></svg>
+      <div class="week-legend"><span><i style="background:var(--sage)"></i>Left</span><span><i style="background:var(--blue)"></i>Right</span><span><i style="background:var(--gold)"></i>Bottle</span><span><i style="background:var(--lav)"></i>Solids</span></div>
+      <div class="week-info" id="weekCalInfo">Tap a feeding for details</div>
+    </div>
   </div>
 </div>
 
@@ -466,6 +497,7 @@
     <button class="btn secondary" onclick="document.getElementById('importFile').click()">Import backup</button>
     <input type="file" id="importFile" accept="application/json" style="display:none;" onchange="importData(event)">
     <button class="btn danger" onclick="confirmReset()">Erase all data</button>
+    <p class="data-note">Entries older than 6 months are deleted automatically to save space. Export a backup if you want to keep them.</p>
   </div>
   <div class="section">
     <div class="section-head"><div class="section-title">Appearance</div></div>
@@ -607,6 +639,17 @@
       <div class="field"><label>Notes (optional)</label><textarea id="solidNotes" placeholder="Any extra notes"></textarea></div>
       <button class="btn" onclick="logSolid()">Save feeding</button>
     </div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-edit" onclick="closeOverlayBg(event,'ov-edit')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><h2 id="editTitle">Edit entry</h2><button class="sheet-close" onclick="closeSheet('ov-edit')">✕</button></div>
+    <div id="editBody"></div>
+    <input type="file" id="editPhotoInput" accept="image/*" multiple style="display:none;" onchange="onEditPhotosChosen(event)">
+    <button class="btn" onclick="saveEditLog()">Save changes</button>
+    <button class="btn secondary" style="color:var(--danger);" onclick="deleteEditLog()">Delete entry</button>
   </div>
 </div>
 
@@ -1377,17 +1420,146 @@ function logDiaper(){
   toast('Diaper logged'); closeSheet('ov-diaper'); renderAll();
 }
 
+/* ---------------- Edit / delete past entries ---------------- */
+const DAY_MS = 24*60*60*1000;
+const within24h = l => (Date.now() - l.timestamp) <= DAY_MS;
+function attr(s){ return escapeHtml(String(s==null?'':s)).replace(/"/g,'&quot;'); }
+function rowActions(id){
+  return `<span class="row-actions"><button class="row-act" aria-label="Edit entry" onclick="openEditLog('${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></button><button class="row-act del" aria-label="Delete entry" onclick="deleteLog('${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button></span>`;
+}
+function deleteLog(id){
+  const log = DATA.logs.find(l=>l.id===id); if(!log) return;
+  const extra = (log.photos && log.photos.length) ? ' Its photos will be deleted too.' : '';
+  if(!confirm('Delete this entry?'+extra+' This cannot be undone.')) return;
+  DATA.logs = DATA.logs.filter(l=>l.id!==id);
+  save(); closeSheet('ov-edit'); renderAll(); toast('Entry deleted');
+}
+let editingId = null, editState = {}, editPhotos = [], editOrig = {};
+function editSeg(key, opts, wrap){
+  return `<div class="seg${wrap?' seg-wrap':''}">` + opts.map(([v,l])=>`<button type="button" class="${v===editState[key]?'sel':''}" onclick="editSet('${key}','${v}',this)">${l}</button>`).join('') + '</div>';
+}
+function editSet(key, v, btn){ editState[key]=v; btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('sel', b===btn)); }
+function editToggle(key, label){
+  return `<div class="field"><div class="toggle-row"><label style="margin:0;">${label}</label><button type="button" class="toggle-switch${editState[key]?' on':''}" onclick="editToggleSet('${key}',this)"><span class="toggle-knob"></span></button></div></div>`;
+}
+function editToggleSet(key, btn){ editState[key] = !editState[key]; btn.classList.toggle('on', !!editState[key]); }
+function openEditLog(id){
+  const log = DATA.logs.find(l=>l.id===id); if(!log) return;
+  editingId = id; editState = {}; editPhotos = (log.photos||[]).slice();
+  editOrig = { date: localDateValue(log.timestamp), time: localTimeValue(log.timestamp) };
+  let title = 'Edit entry', body = '';
+  body += `<div class="field"><label>Date</label><input type="date" class="big-dt" id="ef_date" value="${editOrig.date}"></div>`;
+  body += `<div class="field"><label>Time</label><input type="time" class="big-dt" id="ef_time" value="${editOrig.time}"></div>`;
+  if(log.type==='feed' && log.sub==='breast'){
+    title = 'Edit feeding';
+    const timed = !!(log.leftMin || log.rightMin);
+    editState.side = log.side || 'left';
+    if(!timed) body += `<div class="field"><label>Side</label>${editSeg('side',[['left','Left'],['right','Right'],['both','Both']])}</div>`;
+    body += `<div class="field"><label>Minutes${timed?'':' (optional)'}</label><div class="edit-two"><div><div class="edit-sub">Left</div><input type="number" id="ef_left" min="0" inputmode="numeric" placeholder="0" value="${attr(log.leftMin||'')}"></div><div><div class="edit-sub">Right</div><input type="number" id="ef_right" min="0" inputmode="numeric" placeholder="0" value="${attr(log.rightMin||'')}"></div></div></div>`;
+  } else if(log.type==='feed' && log.sub==='bottle'){
+    title = 'Edit feeding';
+    editState.milkType = log.milkType || 'formula';
+    body += `<div class="field"><label>Amount (oz)</label><input type="number" id="ef_amount" step="0.5" min="0" value="${attr(log.amount||'')}"></div>`;
+    body += `<div class="field"><label>Type</label>${editSeg('milkType',[['formula','Formula'],['breastmilk','Breast milk']])}</div>`;
+    body += `<div class="field"><label>Notes (optional)</label><input type="text" id="ef_notes" value="${attr(log.notes||'')}"></div>`;
+  } else if(log.type==='feed' && log.sub==='solid'){
+    title = 'Edit feeding';
+    editState.amountLevel = log.amountLevel || 'little'; editState.reaction = log.reaction || 'liked'; editState.prep = log.prep || 'steamed';
+    body += `<div class="field"><label>Food</label><input type="text" id="ef_food" value="${attr(log.food||'')}"></div>`;
+    body += `<div class="field"><label>Amount</label>${editSeg('amountLevel',[['none','None'],['little','A little'],['most','Most'],['all','All']])}</div>`;
+    body += `<div class="field"><label>Reaction</label>${editSeg('reaction',[['liked','Liked it'],['neutral','Neutral'],['disliked','Disliked'],['reaction','Allergic reaction']])}</div>`;
+    body += `<div class="field"><label>Prepared</label>${editSeg('prep',[['raw','Raw'],['steamed','Steamed'],['boiled','Boiled'],['baked','Baked']])}</div>`;
+    body += `<div class="field"><label>Notes (optional)</label><textarea id="ef_notes">${escapeHtml(log.notes||'')}</textarea></div>`;
+  } else if(log.type==='diaper'){
+    title = 'Edit diaper change';
+    editState.kind = log.kind || 'wet'; editState.blowout = !!log.blowout; editState.rash = !!log.rash;
+    body += `<div class="field"><label>Type</label>${editSeg('kind',[['wet','Wet'],['dirty','Dirty'],['both','Both']])}</div>`;
+    body += editToggle('blowout','Blow out') + editToggle('rash','Diaper rash');
+    body += `<div class="field"><label>Notes (optional)</label><input type="text" id="ef_notes" value="${attr(log.notes||'')}"></div>`;
+  } else if(log.type==='doctor'){
+    title = 'Edit doctor question';
+    editState.kind = log.kind || 'general';
+    const opts = ['general','behavior','sick','injury','other'];
+    if(editState.kind==='falls') opts.push('falls');
+    body += `<div class="field"><label>Type</label>${editSeg('kind', opts.map(k=>[k, DOCTOR_TYPES[k]]), true)}</div>`;
+    body += `<div class="field"><label>Notes</label><textarea id="ef_notes">${escapeHtml(log.notes||'')}</textarea></div>`;
+    body += `<div class="field"><label>Photos</label><div class="photo-grid" id="editPhotoGrid"></div></div>`;
+  }
+  document.getElementById('editTitle').textContent = title;
+  document.getElementById('editBody').innerHTML = body;
+  if(log.type==='doctor') renderEditPhotos();
+  document.getElementById('ov-edit').classList.add('open');
+}
+function renderEditPhotos(){
+  const grid = document.getElementById('editPhotoGrid'); if(!grid) return;
+  let html = '';
+  editPhotos.forEach((p,i)=>{
+    html += `<div class="photo-thumb"><img src="${p}" alt="Photo ${i+1}" onclick="openPhoto(editPhotos[${i}])"><button class="photo-x" aria-label="Remove photo" onclick="removeEditPhoto(${i})">✕</button></div>`;
+  });
+  if(editPhotos.length < MAX_DOCTOR_PHOTOS) html += `<button type="button" class="photo-add" onclick="document.getElementById('editPhotoInput').click()"><span>+</span>Add photos</button>`;
+  grid.innerHTML = html;
+}
+function removeEditPhoto(i){ editPhotos.splice(i,1); renderEditPhotos(); }
+async function onEditPhotosChosen(evt){
+  const files = Array.from(evt.target.files || []); evt.target.value = '';
+  for(const f of files){
+    if(editPhotos.length >= MAX_DOCTOR_PHOTOS){ toast('Photo limit reached'); break; }
+    const url = await compressImageFile(f, 900, 0.65);
+    if(url){ editPhotos.push(url); renderEditPhotos(); }
+  }
+}
+function saveEditLog(){
+  const log = DATA.logs.find(l=>l.id===editingId); if(!log) return closeSheet('ov-edit');
+  const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  // date & time (only touch the timestamp if the person actually changed them)
+  const dv = val('ef_date'), tv = val('ef_time');
+  if(dv && tv && (dv!==editOrig.date || tv!==editOrig.time)){
+    const [y,mo,da] = dv.split('-').map(Number), [h,mi] = tv.split(':').map(Number);
+    log.timestamp = new Date(y, mo-1, da, h, mi, 0, 0).getTime();
+  }
+  if(log.type==='feed' && log.sub==='breast'){
+    const l = Math.max(0, parseInt(val('ef_left'),10)||0), r = Math.max(0, parseInt(val('ef_right'),10)||0);
+    if(l>0 || r>0){
+      log.leftMin = l; log.rightMin = r; log.durationMin = Math.max(1, l+r);
+      log.side = (l>0 && r>0) ? 'both' : (l>0 ? 'left' : 'right');
+    } else {
+      log.leftMin = 0; log.rightMin = 0; log.durationMin = null;
+      log.side = editState.side || log.side || 'left';
+    }
+  } else if(log.type==='feed' && log.sub==='bottle'){
+    log.amount = parseFloat(val('ef_amount'))||0; log.milkType = editState.milkType; log.notes = val('ef_notes').trim();
+  } else if(log.type==='feed' && log.sub==='solid'){
+    log.food = val('ef_food').trim() || 'Solid food'; log.amountLevel = editState.amountLevel; log.reaction = editState.reaction; log.prep = editState.prep; log.notes = val('ef_notes').trim();
+  } else if(log.type==='diaper'){
+    log.kind = editState.kind; log.blowout = !!editState.blowout; log.rash = !!editState.rash; log.notes = val('ef_notes').trim();
+  } else if(log.type==='doctor'){
+    log.kind = editState.kind; log.notes = val('ef_notes').trim();
+    const hadPhotos = !!(log.photos && log.photos.length);
+    log.photos = editPhotos.slice();
+    if(log.photos.length){
+      if(!hadPhotos || !log.photosSavedAt) log.photosSavedAt = Date.now();
+      log.photosExpired = false;
+    }
+  }
+  save(); closeSheet('ov-edit'); renderAll(); toast('Changes saved');
+}
+function deleteEditLog(){ if(editingId) deleteLog(editingId); }
+
 /* ---------------- Doctor questions ---------------- */
 // 'falls' is no longer selectable, but is kept here so older entries still show their label
 const DOCTOR_TYPES = { general:'General questions', behavior:'New Behavior', sick:'Sick', injury:'Injury', other:'Other', falls:'Falls' };
 const MAX_DOCTOR_PHOTOS = 20;
 const PHOTO_RETENTION_MONTHS = 5;
-/* Doctor-question photos are kept for 5 months, then deleted from storage (the text entry stays). */
+const DATA_RETENTION_MONTHS = 6;
+/* Storage housekeeping: entries older than 6 months are deleted; doctor-question photos go after 5 months (the text entry stays until 6). */
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && typeof CURRENT_USER_ID!=='undefined' && CURRENT_USER_ID){ if(purgeExpiredPhotos()) renderAll(); } });
 function purgeExpiredPhotos(){
   if(!DATA || !Array.isArray(DATA.logs)) return false;
   const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - PHOTO_RETENTION_MONTHS);
-  let changed = false;
+  const dataCutoff = new Date(); dataCutoff.setMonth(dataCutoff.getMonth() - DATA_RETENTION_MONTHS);
+  const before = DATA.logs.length;
+  DATA.logs = DATA.logs.filter(l => l.timestamp >= dataCutoff.getTime());
+  let changed = DATA.logs.length !== before;
   DATA.logs.forEach(l=>{
     if(l.type==='doctor' && l.photos && l.photos.length){
       const savedAt = l.photosSavedAt || l.timestamp;
@@ -1474,7 +1646,7 @@ function renderDoctorLog(){
   const el = document.getElementById('doctorLog');
   if(!el) return;
   const b = activeBaby();
-  const all = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='doctor').sort((a,c)=>c.timestamp-a.timestamp).slice(0,50) : [];
+  const all = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='doctor').sort((a,c)=>c.timestamp-a.timestamp) : [];
   const head = `<button class="fold-head${doctorOpen?' open':''}" onclick="toggleDoctorOpen()" aria-expanded="${doctorOpen}">
       <span><span class="feedings-log-title">Doctor questions</span>${all.length?`<span class="fold-count">${all.length}</span>`:''}</span>
       <svg class="fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -1489,7 +1661,7 @@ function renderDoctorLog(){
   rows.forEach(log=>{
     const photos = (log.photos||[]);
     html += `<div class="doc-row">
-      <div class="feeding-row-top"><span><span class="feeding-row-time">${fmtDateShort(log.timestamp)} ${fmtTime(log.timestamp)}</span><span class="feeding-row-type">${escapeHtml(DOCTOR_TYPES[log.kind]||'Other')}</span></span></div>
+      <div class="feeding-row-top"><span><span class="feeding-row-time">${fmtDateShort(log.timestamp)} ${fmtTime(log.timestamp)}</span><span class="feeding-row-type">${escapeHtml(DOCTOR_TYPES[log.kind]||'Other')}</span></span><span class="row-right">${rowActions(log.id)}</span></div>
       ${log.notes ? `<div class="doc-notes">${escapeHtml(log.notes)}</div>` : ''}
       ${log.photosExpired && !photos.length ? `<div class="doc-notes" style="font-style:italic;">Photos removed after 5 months</div>` : ''}
       ${photos.length ? `<div class="doc-thumbs">${photos.map(p=>`<img src="${p}" alt="Photo" onclick="openPhoto(this.src)">`).join('')}</div>` : ''}
@@ -1564,14 +1736,15 @@ function toggleDiapersExpanded(){ diapersExpanded = !diapersExpanded; renderDiap
 function renderFeedingsLog(){
   const el = document.getElementById('feedingsLog');
   const b = activeBaby();
-  const allFeeds = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed').sort((a,c)=>c.timestamp-a.timestamp).slice(0,30) : [];
+  const feedsAll = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed').sort((a,c)=>c.timestamp-a.timestamp) : [];
+  const allFeeds = feedsAll.filter(within24h);
   if(!allFeeds.length){
-    el.innerHTML = `<div class="feedings-log-title">Recent feedings</div><div class="feedings-empty">${b?'No feedings logged yet':'Add a baby to start tracking'}</div>`;
+    el.innerHTML = `<div class="feedings-log-title">Recent feedings<span class="log-window">last 24 hours</span></div><div class="feedings-empty">${b?'No feedings in the last 24 hours':'Add a baby to start tracking'}</div>`;
     return;
   }
   const feeds = feedingsExpanded ? allFeeds : allFeeds.slice(0,5);
   const maxDur = Math.max(15, ...allFeeds.map(f=>f.durationMin||0));
-  let html = '<div class="feedings-log-title">Recent feedings</div>';
+  let html = '<div class="feedings-log-title">Recent feedings<span class="log-window">last 24 hours</span></div>';
   feeds.forEach(log=>{
     const dur = log.durationMin || 0;
     const pct = Math.max(dur>0?4:0, Math.round((dur/maxDur)*100));
@@ -1588,7 +1761,7 @@ function renderFeedingsLog(){
     html += `<div class="feeding-row">
       <div class="feeding-row-top">
         <span><span class="feeding-row-time">${fmtTime(log.timestamp)}</span><span class="feeding-row-type">${escapeHtml(feedingRowLabel(log))}</span></span>
-        <span class="feeding-row-dur">${dur>0? fmtDuration(dur) : '—'}</span>
+        <span class="row-right"><span class="feeding-row-dur">${dur>0? fmtDuration(dur) : '—'}</span>${rowActions(log.id)}</span>
       </div>
       <div class="feeding-bar-track">${bar}</div>
     </div>`;
@@ -1608,18 +1781,20 @@ function renderDiapersLog(){
   const el = document.getElementById('diapersLog');
   if(!el) return;
   const b = activeBaby();
-  const allDiapers = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='diaper').sort((a,c)=>c.timestamp-a.timestamp).slice(0,30) : [];
+  const diapersAll = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='diaper').sort((a,c)=>c.timestamp-a.timestamp) : [];
+  const allDiapers = diapersAll.filter(within24h);
   if(!allDiapers.length){
-    el.innerHTML = `<div class="feedings-log-title">Recent diapers</div><div class="feedings-empty">${b?'No diaper changes logged yet':'Add a baby to start tracking'}</div>`;
+    el.innerHTML = `<div class="feedings-log-title">Recent diapers<span class="log-window">last 24 hours</span></div><div class="feedings-empty">${b?'No diaper changes in the last 24 hours':'Add a baby to start tracking'}</div>`;
     return;
   }
   const diapers = diapersExpanded ? allDiapers : allDiapers.slice(0,5);
-  let html = '<div class="feedings-log-title">Recent diapers</div>';
+  let html = '<div class="feedings-log-title">Recent diapers<span class="log-window">last 24 hours</span></div>';
   diapers.forEach(log=>{
     const color = log.blowout ? 'var(--danger)' : (log.kind==='dirty' ? 'var(--rose)' : (log.kind==='both' ? 'var(--lav)' : 'var(--blue)'));
     html += `<div class="feeding-row">
       <div class="feeding-row-top">
         <span><span class="feeding-row-time">${fmtTime(log.timestamp)}</span><span class="feeding-row-type">${escapeHtml(diaperRowLabel(log))}</span></span>
+        <span class="row-right">${rowActions(log.id)}</span>
       </div>
       <div class="feeding-bar-track"><div class="feeding-bar-seg" style="width:100%;background:${color};"></div></div>
     </div>`;
@@ -1761,6 +1936,82 @@ function lastNDayKeys(n){
   for(let i=n-1;i>=0;i--){ const d=new Date(today); d.setDate(d.getDate()-i); days.push(d.getTime()); }
   return days;
 }
+function feedSegments(log){
+  if(log.sub==='breast'){
+    if(log.side==='both' && (log.leftMin||log.rightMin)) return [{c:'var(--sage)', m:log.leftMin||0},{c:'var(--blue)', m:log.rightMin||0}];
+    const c = log.side==='left' ? 'var(--sage)' : (log.side==='right' ? 'var(--blue)' : 'var(--lav)');
+    return [{c, m:(log.leftMin||0)+(log.rightMin||0)||log.durationMin||0}];
+  }
+  return [{c: log.sub==='bottle' ? 'var(--gold)' : 'var(--lav)', m:log.durationMin||0}];
+}
+function showWeekInfo(id){
+  const l = DATA.logs.find(x=>x.id===id); if(!l) return;
+  const d = new Date(l.timestamp).toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+  const dur = l.durationMin ? ' · '+fmtDuration(l.durationMin) : '';
+  document.getElementById('weekCalInfo').textContent = `${d}, ${fmtTime(l.timestamp)} · ${feedingRowLabel(l)}${dur}`;
+}
+function renderWeekCalendar(){
+  const svg = document.getElementById('weekCalSvg'); if(!svg) return;
+  const b = activeBaby();
+  const W=340, GL=32, PR=6, T=30, HH=28, colW=(W-GL-PR)/7, bodyH=24*HH;
+  const days = lastNDayKeys(7);
+  const idx = {}; days.forEach((d,i)=>idx[d]=i);
+  let out = '';
+  // today column tint
+  out += `<rect x="${GL+6*colW}" y="${T}" width="${colW}" height="${bodyH}" fill="var(--sage-soft)" opacity="0.55"/>`;
+  // hour gridlines + labels every 3 hours
+  for(let h=0; h<=24; h+=3){
+    const y = T + h*HH;
+    out += `<line x1="${GL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+    const lab = (h===0 || h===24) ? '12a' : (h<12 ? h+'a' : (h===12 ? '12p' : (h-12)+'p'));
+    out += `<text x="${GL-5}" y="${y+(h===24?2:4)}" font-size="9" text-anchor="end" fill="var(--muted)">${lab}</text>`;
+  }
+  // day columns + headers
+  days.forEach((d,i)=>{
+    const x = GL + i*colW, dt = new Date(d);
+    out += `<line x1="${x}" y1="${T}" x2="${x}" y2="${T+bodyH}" stroke="var(--border)" stroke-width="1"/>`;
+    const wd = dt.toLocaleDateString([], {weekday:'short'});
+    out += `<text x="${x+colW/2}" y="12" font-size="9.5" font-weight="${i===6?800:600}" text-anchor="middle" fill="${i===6?'var(--text)':'var(--muted)'}">${wd}</text>`;
+    out += `<text x="${x+colW/2}" y="24" font-size="9.5" font-weight="${i===6?800:600}" text-anchor="middle" fill="${i===6?'var(--text)':'var(--muted)'}">${dt.getDate()}</text>`;
+  });
+  out += `<line x1="${W-PR}" y1="${T}" x2="${W-PR}" y2="${T+bodyH}" stroke="var(--border)" stroke-width="1"/>`;
+  // feedings (a feeding that runs past midnight continues at the top of the next day)
+  const feeds = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed' && l.timestamp >= days[0]-DAY_MS && l.timestamp < days[6]+DAY_MS) : [];
+  const drawn = feeds.filter(l=>dayKey(l.timestamp) in idx).length;
+  const rectFor = (col, cursor, mins, color, id, minH)=>{
+    const dt = new Date(cursor);
+    const minOfDay = dt.getHours()*60 + dt.getMinutes() + dt.getSeconds()/60;
+    const y = T + (minOfDay/60)*HH;
+    let h = Math.max(minH, mins/60*HH);
+    if(y + h > T + bodyH) h = Math.max(2, T + bodyH - y);
+    const x = GL + col*colW + 2, w = colW - 4;
+    return `<g style="cursor:pointer" onclick="showWeekInfo('${id}')"><rect x="${x}" y="${y.toFixed(1)}" width="${w}" height="${h.toFixed(1)}" rx="2" fill="${color}"/></g>`;
+  };
+  feeds.forEach(l=>{
+    const segs = feedSegments(l);
+    const totalMin = segs.reduce((t,sg)=>t+sg.m,0);
+    let cursor = l.timestamp;
+    if(totalMin<=0){
+      const col = idx[dayKey(cursor)];
+      if(col!==undefined) out += rectFor(col, cursor, 0, segs[0].c, l.id, 6);
+      return;
+    }
+    segs.forEach(sg=>{
+      let rem = sg.m;
+      while(rem>0){
+        const d0 = dayKey(cursor);
+        const next = new Date(d0); next.setDate(next.getDate()+1);
+        const toMid = (next.getTime()-cursor)/60000;
+        const take = Math.min(rem, toMid);
+        const col = idx[d0];
+        if(col!==undefined) out += rectFor(col, cursor, take, sg.c, l.id, 3);
+        cursor += take*60000; rem -= take;
+      }
+    });
+  });
+  if(!drawn && !feeds.length) out += `<text x="${(GL+W-PR)/2}" y="${T+bodyH/2}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--muted)">No feedings in the last 7 days</text>`;
+  svg.innerHTML = out;
+}
 function movingAverage(arr, windowSize){
   return arr.map((_,i)=>{
     const start = Math.max(0, i-windowSize+1);
@@ -1823,6 +2074,13 @@ function renderHistory(){
   const daysEl = document.getElementById('historyDays');
   if(document.activeElement!==daysEl) daysEl.value = N;
   document.getElementById('totalsDays').textContent = N;
+  const sod = new Date(); sod.setHours(0,0,0,0);
+  const todayAll = b ? DATA.logs.filter(l=>l.babyId===b.id && l.timestamp>=sod.getTime()) : [];
+  const todayBr = todayAll.filter(l=>l.type==='feed' && l.sub==='breast');
+  document.getElementById('todaySessions').textContent = todayBr.length;
+  document.getElementById('todayDiapers').textContent = todayAll.filter(l=>l.type==='diaper').length;
+  document.getElementById('todayFeedTotal').textContent = fmtDuration(todayBr.reduce((t,l)=>t+(l.leftMin||0)+(l.rightMin||0),0));
+  renderWeekCalendar();
   const days = lastNDayKeys(N);
   const feedCounts = days.map(()=>0), diaperCounts = days.map(()=>0), blowoutCounts = days.map(()=>0);
   if(b){
