@@ -330,7 +330,6 @@
   .feed-side-btn.running .fsb-time, .feed-side-btn.running .fsb-label{ color:var(--gold); }
   .feed-side-btn.paused{ border-color:var(--sage); }
   .feed-side-btn .live-dot{ position:absolute; top:10px; left:12px; width:6px;height:6px;border-radius:50%; background:var(--gold); animation:pulse 1.4s infinite; }
-  .fsb-lastused{ font-size:10px; font-weight:700; color:var(--sage); margin-top:3px; letter-spacing:.03em; text-transform:uppercase; }
   .feed-session-actions{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-top:12px; }
   .start-time-chip{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted); }
   .start-time-chip input{ font-family:inherit; font-size:14px; font-weight:600; color:var(--text); background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:4px 6px; }
@@ -419,13 +418,11 @@
       <button class="feed-side-btn" id="homeLeftBtn" onclick="onHomeSideTap('left')">
         <div class="fsb-label">Left</div>
         <div class="fsb-time" id="homeLeftTime">Start</div>
-        <div class="fsb-lastused" id="homeLeftLastUsed" style="display:none;">Last used</div>
         <span class="edit-pencil" id="homeEditL" role="button" aria-label="Edit left duration" onclick="openDurationPicker('left', event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></span>
       </button>
       <button class="feed-side-btn" id="homeRightBtn" onclick="onHomeSideTap('right')">
         <div class="fsb-label">Right</div>
         <div class="fsb-time" id="homeRightTime">Start</div>
-        <div class="fsb-lastused" id="homeRightLastUsed" style="display:none;">Last used</div>
         <span class="edit-pencil" id="homeEditR" role="button" aria-label="Edit right duration" onclick="openDurationPicker('right', event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></span>
       </button>
     </div>
@@ -2147,18 +2144,6 @@ function renderFeedCard(){
   }
   document.getElementById('homeEditL').style.display = (leftMs>0 || state.runningSide==='left') ? 'flex' : 'none';
   document.getElementById('homeEditR').style.display = (rightMs>0 || state.runningSide==='right') ? 'flex' : 'none';
-  // when no session is in progress, flag whichever side was used last time so it's easy to alternate
-  const luL = document.getElementById('homeLeftLastUsed'), luR = document.getElementById('homeRightLastUsed');
-  const idle = !state.runningSide && leftMs===0 && rightMs===0;
-  const lastBreastSide = idle ? getLastBreastSide(feeds) : null;
-  luL.style.display = lastBreastSide==='left' ? 'block' : 'none';
-  luR.style.display = lastBreastSide==='right' ? 'block' : 'none';
-}
-function getLastBreastSide(feeds){
-  const lb = feeds.find(l=>l.sub==='breast');
-  if(!lb) return null;
-  if(lb.side==='both') return lb.endSide==='right' ? 'right' : 'left';
-  return lb.side==='right' ? 'right' : (lb.side==='left' ? 'left' : null);
 }
 function fmtCountdown(ms){
   let s = Math.max(0, Math.round(ms/1000));
