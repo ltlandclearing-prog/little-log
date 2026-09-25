@@ -135,6 +135,7 @@
   .stat{ background:var(--surface-2); border-radius:var(--radius-sm); padding:12px 10px; text-align:left; }
   .stat .label{ font-size:11.5px; color:var(--muted); font-weight:600; }
   .stat .value{ font-size:17px; font-weight:700; margin-top:3px; font-family:'Quicksand',sans-serif; }
+  .home-today-value{ font-size:25.5px; }
   .stat .stat-sub{ font-size:11px; color:var(--muted); margin-top:2px; font-weight:600; }
 
   .quick-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
@@ -271,9 +272,9 @@
   .dual-timer{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
   .side-panel{ background:var(--surface-2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:18px 8px; text-align:center; cursor:pointer; font-family:inherit; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
   .side-panel .sp-label{ font-size:22px; font-weight:700; font-family:'Quicksand',sans-serif; color:var(--text); }
-  .side-panel.running .sp-time, .side-panel.paused .sp-time{ order:-1; font-size:48.6px; }
+  .side-panel.running .sp-time, .side-panel.paused .sp-time{ order:-1; font-size:55.9px; }
   .side-panel.running .sp-label, .side-panel.paused .sp-label{ font-size:13px; margin-top:6px; }
-  .side-panel .sp-time{ font-family:'Quicksand',sans-serif; font-size:28.8px; font-weight:600; margin-top:6px; color:var(--text); }
+  .side-panel .sp-time{ font-family:'Quicksand',sans-serif; font-size:33.1px; font-weight:600; margin-top:6px; color:var(--text); }
   .side-panel .sp-state{ font-size:11.5px; color:var(--muted); margin-top:6px; }
   .side-panel.running{ background:var(--gold-soft); border-color:var(--gold); }
   .side-panel.running .sp-time, .side-panel.running .sp-label{ color:var(--gold); }
@@ -284,6 +285,10 @@
 
   .edit-pencil{ position:absolute; top:4px; right:4px; width:30px; height:30px; display:none; align-items:center; justify-content:center; border-radius:50%; color:var(--muted); cursor:pointer; }
   .edit-pencil svg{ width:16px; height:16px; }
+  .row-edit-btn{ background:var(--surface-2); border:none; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; flex-shrink:0; }
+  .row-edit-btn svg{ width:15px; height:15px; }
+  .metric-pick-field{ margin-bottom:14px; }
+  .metric-pick-field label{ display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:6px; }
   .side-panel.running .edit-pencil, .feed-side-btn.running .edit-pencil{ color:var(--gold); }
   #ov-duration{ z-index:150; }
   .wheel-wrap{ position:relative; display:flex; justify-content:center; align-items:center; gap:22px; height:200px; margin:4px 0 14px; }
@@ -307,8 +312,8 @@
   .feed-sides{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
   .feed-side-btn{ background:var(--surface-2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:14px 8px; text-align:center; cursor:pointer; font-family:inherit; position:relative; min-height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
   .feed-side-btn .fsb-label{ font-family:'Quicksand',sans-serif; font-size:22px; font-weight:700; color:var(--text); }
-  .feed-side-btn .fsb-time{ font-size:15.6px; font-weight:600; margin-top:5px; color:var(--muted); transition:font-size .15s ease; }
-  .feed-side-btn.running .fsb-time, .feed-side-btn.paused .fsb-time{ order:-1; font-size:39.5px; margin-top:0; font-family:'Quicksand',sans-serif; font-weight:700; }
+  .feed-side-btn .fsb-time{ font-size:17.9px; font-weight:600; margin-top:5px; color:var(--muted); transition:font-size .15s ease; }
+  .feed-side-btn.running .fsb-time, .feed-side-btn.paused .fsb-time{ order:-1; font-size:45.4px; margin-top:0; font-family:'Quicksand',sans-serif; font-weight:700; }
   .feed-side-btn.running .fsb-label, .feed-side-btn.paused .fsb-label{ font-size:12px; font-weight:700; margin-top:5px; }
   .feed-side-btn.running{ background:var(--gold-soft); border-color:var(--gold); }
   .feed-side-btn.running .fsb-time, .feed-side-btn.running .fsb-label{ color:var(--gold); }
@@ -348,6 +353,10 @@
   .graph-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 12px; box-shadow:var(--shadow); }
   .graph-card svg{ width:100%; height:140px; display:block; }
   .graph-card svg.week-cal{ height:auto; }
+  .graph-row{ display:flex; align-items:stretch; gap:8px; }
+  .graph-trend{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:52px; flex-shrink:0; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:6px 4px; }
+  .graph-trend .trend-num{ font-family:'Quicksand',sans-serif; font-weight:700; font-size:17px; color:#2E9E5B; line-height:1.1; }
+  .graph-trend .trend-cap{ font-size:9.5px; font-weight:600; color:var(--muted); text-align:center; margin-top:2px; }
   .week-legend{ display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center; margin-top:10px; font-size:12px; font-weight:700; color:var(--muted); }
   .week-legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
   .week-info{ text-align:center; font-size:13px; font-weight:700; color:var(--text); margin-top:8px; min-height:18px; }
@@ -468,44 +477,59 @@
     <p class="hero-age" id="heroAge">—</p>
     <h1 class="hero-name" id="heroName">Add a baby to begin</h1>
     <div class="stat-row">
-      <div class="stat"><div class="label">Feedings today</div><div class="value" id="statFeeds">0</div><div class="stat-sub" id="statFeedsLR"></div><div class="stat-sub" id="statFeedsTotal"></div></div>
-      <div class="stat"><div class="label">Diapers today</div><div class="value" id="statDiapers">0</div><div class="stat-sub" id="statDiapersNo"></div><div class="stat-sub" id="statDiapersBlowouts"></div><div class="stat-sub" id="statDiapersTotal"></div></div>
+      <div class="stat"><div class="label">Feedings today</div><div class="value home-today-value" id="statFeeds">0</div><div class="stat-sub" id="statFeedsLR"></div><div class="stat-sub" id="statFeedsTotal"></div></div>
+      <div class="stat"><div class="label">Diapers today</div><div class="value home-today-value" id="statDiapers">0</div><div class="stat-sub" id="statDiapersNo"></div><div class="stat-sub" id="statDiapersBlowouts"></div><div class="stat-sub" id="statDiapersTotal"></div></div>
     </div>
   </div>
 </div>
 
 <div class="app" id="view-history" style="display:none;">
   <div class="section" style="margin-top:20px;">
-    <div class="section-head"><h2 style="font-size:20px;margin:0;">Today <span class="log-window" style="font-size:13px;">since midnight</span></h2></div>
+    <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <h2 style="font-size:20px;margin:0;">Today <span class="log-window" style="font-size:13px;">since midnight</span></h2>
+      <button class="row-edit-btn" aria-label="Choose which stats to show" onclick="openHistoryMetricsSheet('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></button>
+    </div>
     <div class="stat-row" id="historyTodayRow" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat"><div class="label">Feeding sessions</div><div class="value" id="todaySessions">0</div></div>
-      <div class="stat"><div class="label">Diapers</div><div class="value" id="todayDiapers">0</div></div>
-      <div class="stat"><div class="label">Total feeding</div><div class="value" id="todayFeedTotal">0m</div></div>
+      <div class="stat"><div class="label" id="historyTodayLabel0">Feeding sessions</div><div class="value" id="historyTodayValue0">0</div></div>
+      <div class="stat"><div class="label" id="historyTodayLabel1">Diapers</div><div class="value" id="historyTodayValue1">0</div></div>
+      <div class="stat"><div class="label" id="historyTodayLabel2">Total feeding</div><div class="value" id="historyTodayValue2">0m</div></div>
     </div>
   </div>
   <div class="section" style="margin-top:20px;">
-    <div class="section-head"><h2 style="font-size:20px;margin:0;">Last <input type="number" id="historyDays" class="days-input" min="1" max="3650" inputmode="numeric" value="30" oninput="setHistoryDays(this.value)" onchange="commitHistoryDays(this)" aria-label="Number of days to show"> days</h2></div>
+    <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <h2 style="font-size:20px;margin:0;">Last <input type="number" id="historyDays" class="days-input" min="1" max="3650" inputmode="numeric" value="30" oninput="setHistoryDays(this.value)" onchange="commitHistoryDays(this)" aria-label="Number of days to show"> days</h2>
+      <button class="row-edit-btn" aria-label="Choose which stats to show" onclick="openHistoryMetricsSheet('avg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></button>
+    </div>
     <div class="stat-row" id="historyAvgRow" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat"><div class="label">Avg feedings/day</div><div class="value" id="avgFeeds">0</div></div>
-      <div class="stat"><div class="label">Avg diapers/day</div><div class="value" id="avgDiapers">0</div></div>
-      <div class="stat"><div class="label">Avg feeding time/day</div><div class="value" id="avgFeedTime">0m</div></div>
+      <div class="stat"><div class="label" id="historyAvgLabel0">Avg feedings/day</div><div class="value" id="historyAvgValue0">0</div></div>
+      <div class="stat"><div class="label" id="historyAvgLabel1">Avg diapers/day</div><div class="value" id="historyAvgValue1">0</div></div>
+      <div class="stat"><div class="label" id="historyAvgLabel2">Avg feeding time/day</div><div class="value" id="historyAvgValue2">0m</div></div>
     </div>
   </div>
   <div class="section">
-    <div class="section-head"><div class="section-title">Totals (last <span id="totalsDays">30</span> days)</div></div>
+    <div class="section-head" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div class="section-title">Totals (last <span id="totalsDays">30</span> days)</div>
+      <button class="row-edit-btn" aria-label="Choose which stats to show" onclick="openHistoryMetricsSheet('total')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></button>
+    </div>
     <div class="stat-row" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat"><div class="label">Feedings</div><div class="value" id="totalFeeds">0</div></div>
-      <div class="stat"><div class="label">Diapers</div><div class="value" id="totalDiapers">0</div></div>
-      <div class="stat"><div class="label">Blow outs</div><div class="value" id="totalBlowouts">0</div></div>
+      <div class="stat"><div class="label" id="historyTotalLabel0">Feedings</div><div class="value" id="historyTotalValue0">0</div></div>
+      <div class="stat"><div class="label" id="historyTotalLabel1">Diapers</div><div class="value" id="historyTotalValue1">0</div></div>
+      <div class="stat"><div class="label" id="historyTotalLabel2">Blow outs</div><div class="value" id="historyTotalValue2">0</div></div>
     </div>
   </div>
   <div class="section">
     <div class="section-head"><div class="section-title">Feedings per day</div></div>
-    <div class="graph-card"><svg id="feedGraphSvg" viewBox="0 0 320 140" preserveAspectRatio="none"></svg></div>
+    <div class="graph-row">
+      <div class="graph-card" style="flex:1;"><svg id="feedGraphSvg" viewBox="0 0 320 140" preserveAspectRatio="none"></svg></div>
+      <div class="graph-trend" id="feedTrend"></div>
+    </div>
   </div>
   <div class="section">
     <div class="section-head"><div class="section-title">Diapers per day</div></div>
-    <div class="graph-card"><svg id="diaperGraphSvg" viewBox="0 0 320 140" preserveAspectRatio="none"></svg></div>
+    <div class="graph-row">
+      <div class="graph-card" style="flex:1;"><svg id="diaperGraphSvg" viewBox="0 0 320 140" preserveAspectRatio="none"></svg></div>
+      <div class="graph-trend" id="diaperTrend"></div>
+    </div>
   </div>
   <div class="section">
     <div class="section-head"><div class="section-title">Feedings · last 7 days</div></div>
@@ -786,6 +810,17 @@
     </div>
     <button class="btn" onclick="saveBaby()">Save</button>
     <button class="btn danger" id="deleteBabyBtn" style="display:none;" onclick="deleteBaby()">Remove this baby</button>
+  </div>
+</div>
+
+<div class="overlay" id="ov-history-metrics" onclick="closeOverlayBg(event,'ov-history-metrics')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><h2 id="historyMetricsSheetTitle">Choose stats</h2><button class="sheet-close" onclick="closeSheet('ov-history-metrics')">✕</button></div>
+    <div class="metric-pick-field"><label>First stat</label><select id="historyMetricSel0"></select></div>
+    <div class="metric-pick-field"><label>Second stat</label><select id="historyMetricSel1"></select></div>
+    <div class="metric-pick-field"><label>Third stat</label><select id="historyMetricSel2"></select></div>
+    <button class="btn" onclick="saveHistoryMetrics()">Save</button>
   </div>
 </div>
 
@@ -2338,51 +2373,129 @@ function drawBarGraph(svgId, days, counts, color){
   });
   svg.innerHTML = inner;
 }
+const STAT_METRICS = [
+  { key:'feeds',    label:'Feedings',          kind:'count' },
+  { key:'diapers',  label:'Diapers',           kind:'count' },
+  { key:'blowouts', label:'Blow outs',         kind:'count' },
+  { key:'feedMins', label:'Feeding time',      kind:'duration' },
+  { key:'leftMins', label:'Time on left',      kind:'duration' },
+  { key:'rightMins',label:'Time on right',     kind:'duration' },
+  { key:'sessions', label:'Feeding sessions',  kind:'count' },
+  { key:'wet',      label:'Wet diapers',       kind:'count' },
+  { key:'dirty',    label:'Dirty diapers',     kind:'count' },
+  { key:'bottles',  label:'Bottle feeds',      kind:'count' },
+  { key:'solids',   label:'Solid feeds',       kind:'count' },
+];
+const HISTORY_SCOPES = {
+  today: { field:'historyMetricsToday', defaults:['sessions','diapers','feedMins'], labelRow:'historyTodayLabel', valueRow:'historyTodayValue', suffix:'', title:'Choose today’s stats' },
+  avg:   { field:'historyMetrics',      defaults:['feeds','diapers','feedMins'],    labelRow:'historyAvgLabel',   valueRow:'historyAvgValue',   suffix:'/day', title:'Choose stats' },
+  total: { field:'historyMetricsTotal', defaults:['feeds','diapers','blowouts'],    labelRow:'historyTotalLabel', valueRow:'historyTotalValue', suffix:'', title:'Choose totals stats' },
+};
+let historyMetricsEditScope = 'avg';
+function formatStatValue(m, total, scope){
+  if(scope==='avg'){
+    return m.kind==='duration' ? fmtDuration(Math.round(total/getHistoryDays())) : (total/getHistoryDays()).toFixed(1);
+  }
+  return m.kind==='duration' ? fmtDuration(Math.round(total)) : total;
+}
+function getHistoryMetricSlots(scope){
+  const cfg = HISTORY_SCOPES[scope];
+  const m = Array.isArray(DATA[cfg.field]) ? DATA[cfg.field].slice(0,3) : [];
+  while(m.length<3) m.push(cfg.defaults[m.length]);
+  return m.map((k,i)=> STAT_METRICS.some(sm=>sm.key===k) ? k : cfg.defaults[i]);
+}
+function openHistoryMetricsSheet(scope){
+  historyMetricsEditScope = scope;
+  document.getElementById('historyMetricsSheetTitle').textContent = HISTORY_SCOPES[scope].title;
+  const slots = getHistoryMetricSlots(scope);
+  [0,1,2].forEach(i=>{
+    const sel = document.getElementById('historyMetricSel'+i);
+    sel.innerHTML = STAT_METRICS.map(m=>`<option value="${m.key}">${escapeHtml(m.label)}</option>`).join('');
+    sel.value = slots[i];
+  });
+  document.getElementById('ov-history-metrics').classList.add('open');
+}
+function saveHistoryMetrics(){
+  const cfg = HISTORY_SCOPES[historyMetricsEditScope];
+  DATA[cfg.field] = [0,1,2].map(i=>document.getElementById('historyMetricSel'+i).value);
+  save();
+  closeSheet('ov-history-metrics');
+  renderHistory();
+}
+function renderHistoryStatRow(scope, totals){
+  const cfg = HISTORY_SCOPES[scope];
+  const slots = getHistoryMetricSlots(scope);
+  slots.forEach((key,i)=>{
+    const m = STAT_METRICS.find(sm=>sm.key===key) || STAT_METRICS[0];
+    document.getElementById(cfg.labelRow+i).textContent = m.label + cfg.suffix;
+    document.getElementById(cfg.valueRow+i).textContent = formatStatValue(m, totals[key], scope);
+  });
+}
 function renderHistory(){
   const b = activeBaby();
   const N = getHistoryDays();
   const daysEl = document.getElementById('historyDays');
   if(document.activeElement!==daysEl) daysEl.value = N;
   document.getElementById('totalsDays').textContent = N;
-  const sod = new Date(); sod.setHours(0,0,0,0);
-  const todayAll = b ? DATA.logs.filter(l=>l.babyId===b.id && l.timestamp>=sod.getTime()) : [];
-  const todayBr = todayAll.filter(l=>l.type==='feed' && l.sub==='breast');
-  document.getElementById('todaySessions').textContent = todayBr.length;
-  document.getElementById('todayDiapers').textContent = todayAll.filter(l=>l.type==='diaper').length;
-  document.getElementById('todayFeedTotal').textContent = fmtDuration(todayBr.reduce((t,l)=>t+(l.leftMin||0)+(l.rightMin||0),0));
   renderWeekCalendar();
   const days = lastNDayKeys(N);
   // every log is bucketed by the calendar day (midnight-to-midnight, local time) its
   // timestamp falls on via dayKey() — a fixed day boundary, never a rolling 24h window.
   const feedCounts = days.map(()=>0), diaperCounts = days.map(()=>0), blowoutCounts = days.map(()=>0), feedMinCounts = days.map(()=>0);
+  const leftMinCounts = days.map(()=>0), rightMinCounts = days.map(()=>0), sessionCounts = days.map(()=>0);
+  const wetCounts = days.map(()=>0), dirtyCounts = days.map(()=>0), bottleCounts = days.map(()=>0), solidCounts = days.map(()=>0);
   if(b){
     const idxByDay = {}; days.forEach((d,i)=>idxByDay[d]=i);
     DATA.logs.filter(l=>l.babyId===b.id).forEach(l=>{
       const k = dayKey(l.timestamp);
       if(k in idxByDay){
+        const i = idxByDay[k];
         if(l.type==='feed'){
-          feedCounts[idxByDay[k]]++;
-          if(l.sub==='breast') feedMinCounts[idxByDay[k]] += (l.leftMin||0)+(l.rightMin||0);
+          feedCounts[i]++;
+          if(l.sub==='breast'){
+            feedMinCounts[i] += (l.leftMin||0)+(l.rightMin||0);
+            leftMinCounts[i] += (l.leftMin||0);
+            rightMinCounts[i] += (l.rightMin||0);
+            sessionCounts[i]++;
+          } else if(l.sub==='bottle') bottleCounts[i]++;
+          else if(l.sub==='solid') solidCounts[i]++;
         }
         if(l.type==='diaper'){
-          diaperCounts[idxByDay[k]]++;
-          if(l.blowout) blowoutCounts[idxByDay[k]]++;
+          diaperCounts[i]++;
+          if(l.blowout) blowoutCounts[i]++;
+          if(l.kind==='wet'||l.kind==='both') wetCounts[i]++;
+          if(l.kind==='dirty'||l.kind==='both') dirtyCounts[i]++;
         }
       }
     });
   }
-  const totalFeeds = feedCounts.reduce((a,c)=>a+c,0);
-  const totalDiapers = diaperCounts.reduce((a,c)=>a+c,0);
-  const totalBlowouts = blowoutCounts.reduce((a,c)=>a+c,0);
-  const totalFeedMins = feedMinCounts.reduce((a,c)=>a+c,0);
-  document.getElementById('avgFeeds').textContent = (totalFeeds/N).toFixed(1);
-  document.getElementById('avgDiapers').textContent = (totalDiapers/N).toFixed(1);
-  document.getElementById('avgFeedTime').textContent = fmtDuration(Math.round(totalFeedMins/N));
-  document.getElementById('totalFeeds').textContent = totalFeeds;
-  document.getElementById('totalDiapers').textContent = totalDiapers;
-  document.getElementById('totalBlowouts').textContent = totalBlowouts;
+  const sum = a=>a.reduce((x,c)=>x+c,0);
+  const totals = {
+    feeds:sum(feedCounts), diapers:sum(diaperCounts), blowouts:sum(blowoutCounts),
+    feedMins:sum(feedMinCounts), leftMins:sum(leftMinCounts), rightMins:sum(rightMinCounts),
+    sessions:sum(sessionCounts), wet:sum(wetCounts), dirty:sum(dirtyCounts),
+    bottles:sum(bottleCounts), solids:sum(solidCounts)
+  };
+  const lastIdx = days.length-1;
+  const todayTotals = {
+    feeds:feedCounts[lastIdx], diapers:diaperCounts[lastIdx], blowouts:blowoutCounts[lastIdx],
+    feedMins:feedMinCounts[lastIdx], leftMins:leftMinCounts[lastIdx], rightMins:rightMinCounts[lastIdx],
+    sessions:sessionCounts[lastIdx], wet:wetCounts[lastIdx], dirty:dirtyCounts[lastIdx],
+    bottles:bottleCounts[lastIdx], solids:solidCounts[lastIdx]
+  };
+  renderHistoryStatRow('today', todayTotals);
+  renderHistoryStatRow('avg', totals);
+  renderHistoryStatRow('total', totals);
+  renderGraphTrend('feedTrend', todayTotals.feeds, totals.feeds/N);
+  renderGraphTrend('diaperTrend', todayTotals.diapers, totals.diapers/N);
   drawBarGraph('feedGraphSvg', days, feedCounts, 'var(--gold)');
   drawBarGraph('diaperGraphSvg', days, diaperCounts, 'var(--rose)');
+}
+function renderGraphTrend(elId, todayVal, avgVal){
+  const diff = todayVal - avgVal;
+  const rounded = Math.round(Math.abs(diff));
+  const sign = diff>=0 ? '+' : '-';
+  document.getElementById(elId).innerHTML = `<div class="trend-num">${sign}${rounded}</div><div class="trend-cap">vs avg</div>`;
 }
 
 /* ---------------- Export / Import / Reset ---------------- */
