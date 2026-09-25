@@ -337,9 +337,10 @@
   .toggle-switch-cb input:checked + .toggle-slider:before{ transform:translateX(13px); }
   .next-feed-select{ font-family:inherit; font-size:12px; font-weight:700; color:var(--sage); background:none; border:1px solid var(--border); border-radius:999px; padding:2px 7px; flex-shrink:0; }
   .next-feed-info{ text-align:center; margin-top:4px; }
-  .next-feed-count{ font-size:28.125px; font-weight:600; color:#000; }
+  .next-feed-count{ font-size:28.125px; font-weight:600; color:var(--text); }
   .next-feed-count.overdue{ color:var(--danger); }
-  .next-feed-expiry{ font-size:28.125px; font-weight:600; color:#000; }
+  .next-feed-expiry{ font-size:28.125px; font-weight:600; color:var(--text); }
+  :root[data-theme="light"] .next-feed-count:not(.overdue), :root[data-theme="light"] .next-feed-expiry{ color:#000; }
   .feed-more-link{ display:block; text-align:center; margin-top:12px; }
 
   /* ---- Recent feedings bar log ---- */
