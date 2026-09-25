@@ -269,9 +269,11 @@
 
   /* ---- Dual breast timer (sheet) ---- */
   .dual-timer{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-  .side-panel{ background:var(--surface-2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:18px 8px; text-align:center; cursor:pointer; font-family:inherit; position:relative; }
+  .side-panel{ background:var(--surface-2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:18px 8px; text-align:center; cursor:pointer; font-family:inherit; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; }
   .side-panel .sp-label{ font-size:22px; font-weight:700; font-family:'Quicksand',sans-serif; color:var(--text); }
-  .side-panel .sp-time{ font-family:'Quicksand',sans-serif; font-size:24px; font-weight:600; margin-top:6px; color:var(--text); }
+  .side-panel.running .sp-time, .side-panel.paused .sp-time{ order:-1; font-size:48.6px; }
+  .side-panel.running .sp-label, .side-panel.paused .sp-label{ font-size:13px; margin-top:6px; }
+  .side-panel .sp-time{ font-family:'Quicksand',sans-serif; font-size:28.8px; font-weight:600; margin-top:6px; color:var(--text); }
   .side-panel .sp-state{ font-size:11.5px; color:var(--muted); margin-top:6px; }
   .side-panel.running{ background:var(--gold-soft); border-color:var(--gold); }
   .side-panel.running .sp-time, .side-panel.running .sp-label{ color:var(--gold); }
@@ -303,9 +305,11 @@
   .feed-lastside-big{ font-family:'Quicksand',sans-serif; font-size:34px; font-weight:700; text-align:right; line-height:1; }
   .feed-lastside-caption{ font-size:12px; color:var(--muted); text-align:right; margin-top:4px; }
   .feed-sides{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
-  .feed-side-btn{ background:var(--surface-2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:14px 8px; text-align:center; cursor:pointer; font-family:inherit; position:relative; }
+  .feed-side-btn{ background:var(--surface-2); border:2px solid var(--border); border-radius:var(--radius-sm); padding:14px 8px; text-align:center; cursor:pointer; font-family:inherit; position:relative; min-height:64px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
   .feed-side-btn .fsb-label{ font-family:'Quicksand',sans-serif; font-size:22px; font-weight:700; color:var(--text); }
-  .feed-side-btn .fsb-time{ font-size:13px; font-weight:600; margin-top:5px; color:var(--muted); }
+  .feed-side-btn .fsb-time{ font-size:15.6px; font-weight:600; margin-top:5px; color:var(--muted); transition:font-size .15s ease; }
+  .feed-side-btn.running .fsb-time, .feed-side-btn.paused .fsb-time{ order:-1; font-size:39.5px; margin-top:0; font-family:'Quicksand',sans-serif; font-weight:700; }
+  .feed-side-btn.running .fsb-label, .feed-side-btn.paused .fsb-label{ font-size:12px; font-weight:700; margin-top:5px; }
   .feed-side-btn.running{ background:var(--gold-soft); border-color:var(--gold); }
   .feed-side-btn.running .fsb-time, .feed-side-btn.running .fsb-label{ color:var(--gold); }
   .feed-side-btn.paused{ border-color:var(--sage); }
@@ -313,6 +317,20 @@
   .feed-session-actions{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-top:12px; }
   .start-time-chip{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted); }
   .start-time-chip input{ font-family:inherit; font-size:14px; font-weight:600; color:var(--text); background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:4px 6px; }
+  .next-feed-row{ margin-top:12px; }
+  .next-feed-toggle-line{ display:flex; align-items:center; gap:8px; }
+  .next-feed-toggle-label{ font-size:13.5px; font-weight:600; color:var(--sage); flex:1; cursor:pointer; }
+  .toggle-switch-cb{ position:relative; display:inline-block; width:32px; height:19px; flex-shrink:0; }
+  .toggle-switch-cb input{ opacity:0; width:0; height:0; position:absolute; }
+  .toggle-slider{ position:absolute; inset:0; background:var(--border); border-radius:999px; transition:background .15s ease; cursor:pointer; }
+  .toggle-slider:before{ content:""; position:absolute; height:15px; width:15px; left:2px; top:2px; background:#fff; border-radius:50%; transition:transform .15s ease; box-shadow:0 1px 2px rgba(0,0,0,0.25); }
+  .toggle-switch-cb input:checked + .toggle-slider{ background:var(--sage); }
+  .toggle-switch-cb input:checked + .toggle-slider:before{ transform:translateX(13px); }
+  .next-feed-select{ font-family:inherit; font-size:12px; font-weight:700; color:var(--sage); background:none; border:1px solid var(--border); border-radius:999px; padding:2px 7px; flex-shrink:0; }
+  .next-feed-info{ text-align:center; margin-top:4px; }
+  .next-feed-count{ font-size:12.5px; font-weight:600; color:var(--muted); }
+  .next-feed-count.overdue{ color:var(--danger); }
+  .next-feed-expiry{ font-size:12.5px; font-weight:600; color:var(--muted); }
   .feed-more-link{ display:block; text-align:center; margin-top:12px; }
 
   /* ---- Recent feedings bar log ---- */
@@ -392,6 +410,30 @@
       <button class="link-btn" onclick="saveBreastSessionFromHome()">Save feeding</button>
       <button class="link-btn" style="color:var(--danger);" onclick="discardBreastSessionFromHome()">Discard</button>
     </div>
+    <div class="field" id="homeFeedNotesField" style="display:none;margin-top:2px;"><label>Notes</label><textarea id="homeFeedNotes" placeholder="How did it go?" oninput="onHomeFeedNotesInput()"></textarea></div>
+    <div class="next-feed-row" id="nextFeedRow">
+      <div class="next-feed-toggle-line">
+        <label class="toggle-switch-cb">
+          <input type="checkbox" id="nextFeedToggle" onchange="toggleNextFeedReminder(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="next-feed-toggle-label" for="nextFeedToggle">Next-feeding countdown</label>
+        <select class="next-feed-select" id="nextFeedIntervalSelect" onchange="setNextFeedInterval(this.value)" aria-label="Remind me after">
+          <option value="60">1h</option>
+          <option value="90">1h 30m</option>
+          <option value="120">2h</option>
+          <option value="150">2h 30m</option>
+          <option value="180">3h</option>
+          <option value="210">3h 30m</option>
+          <option value="240">4h</option>
+          <option value="300">5h</option>
+        </select>
+      </div>
+      <div class="next-feed-info" id="nextFeedInfo">
+        <div class="next-feed-count" id="nextFeedCountdown"></div>
+        <div class="next-feed-expiry" id="nextFeedExpiry"></div>
+      </div>
+    </div>
     <button class="link-btn feed-more-link" onclick="openFeedSheet()">Log a bottle or solids instead →</button>
   </div>
 
@@ -446,7 +488,7 @@
     <div class="stat-row" id="historyAvgRow" style="grid-template-columns:repeat(3,1fr);">
       <div class="stat"><div class="label">Avg feedings/day</div><div class="value" id="avgFeeds">0</div></div>
       <div class="stat"><div class="label">Avg diapers/day</div><div class="value" id="avgDiapers">0</div></div>
-      <div class="stat"><div class="label">Avg blow outs/day</div><div class="value" id="avgBlowouts">0</div></div>
+      <div class="stat"><div class="label">Avg feeding time/day</div><div class="value" id="avgFeedTime">0m</div></div>
     </div>
   </div>
   <div class="section">
@@ -586,6 +628,7 @@
         </button>
       </div>
       <p class="dual-timer-hint">Tap a side to start it — tap the other side to switch. Both keep their own time.</p>
+      <div class="field" id="feedNotesField" style="display:none;"><label>Notes</label><textarea id="feedNotes" placeholder="How did it go?" oninput="onFeedNotesInput()"></textarea></div>
       <button class="btn" onclick="saveBreastSessionFromSheet()">Save feeding</button>
       <button class="btn secondary" id="discardSessionBtn" style="display:none;" onclick="discardBreastSessionFromSheet()">Discard timer</button>
       <div class="manual-log-row">
@@ -1145,6 +1188,7 @@ let feedType='breast', bottleType='formula', solidAmount='little', solidReaction
 function openFeedSheet(){
   if(!requireBaby()) return;
   feedTimeTouched = false;
+  document.getElementById('feedNotes').value = '';
   const st0 = getBreastState(activeBaby().id);
   document.getElementById('feedTime').value = localTimeValue(st0.sessionStart || Date.now());
   document.getElementById('ov-feed').classList.add('open');
@@ -1179,10 +1223,11 @@ function wheelValue(id){
   const w = document.getElementById(id);
   return Math.max(0, Math.min(w.children.length-1, Math.round(w.scrollTop/WHEEL_H)));
 }
+let durationTarget = 'live'; // 'live' = the running home/sheet timer, 'edit' = a past entry being edited
 function openDurationPicker(side, ev){
   if(ev){ ev.stopPropagation(); ev.preventDefault(); }
   if(!requireBaby()) return;
-  const st = getBreastState(activeBaby().id);
+  durationTarget = 'live';
   durationSide = side;
   document.getElementById('durTitle').textContent = (side==='left'?'Left':'Right') + ' duration';
   const wm = buildWheel('wheelMin', 181, false), ws = buildWheel('wheelSec', 60, true);
@@ -1193,6 +1238,59 @@ function openDurationPicker(side, ev){
     ws.scrollTop = (secs%60)*WHEEL_H;
     updateWheelSel(wm); updateWheelSel(ws);
   }, 0);
+}
+function openEditDurationPicker(side, ev){
+  if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+  durationTarget = 'edit';
+  durationSide = side;
+  document.getElementById('durTitle').textContent = (side==='left'?'Left':'Right') + ' duration';
+  const wm = buildWheel('wheelMin', 181, false), ws = buildWheel('wheelSec', 60, true);
+  const secs = 0; // wheels always open at 0 min 0 sec, same as the live timer
+  document.getElementById('ov-duration').classList.add('open');
+  setTimeout(()=>{
+    wm.scrollTop = Math.floor(secs/60)*WHEEL_H;
+    ws.scrollTop = (secs%60)*WHEEL_H;
+    updateWheelSel(wm); updateWheelSel(ws);
+  }, 0);
+}
+function editSideElapsedMs(side){
+  let ms = editState[side+'Ms']||0;
+  if(editState.runningSide===side && editState.resumedAt) ms += (Date.now()-editState.resumedAt);
+  return ms;
+}
+function onEditSideTap(side){
+  const now = Date.now();
+  if(editState.runningSide===side){
+    editState[side+'Ms'] = (editState[side+'Ms']||0) + (now-editState.resumedAt);
+    editState.runningSide = null; editState.resumedAt = null;
+  } else {
+    if(editState.runningSide){
+      editState[editState.runningSide+'Ms'] = (editState[editState.runningSide+'Ms']||0) + (now-editState.resumedAt);
+    }
+    editState.runningSide = side; editState.resumedAt = now;
+  }
+  renderEditBreastPanels();
+}
+function finalizeEditBreastState(){
+  if(editState.runningSide){
+    editState[editState.runningSide+'Ms'] = (editState[editState.runningSide+'Ms']||0) + (Date.now()-editState.resumedAt);
+    editState.runningSide = null; editState.resumedAt = null;
+  }
+}
+function renderEditBreastPanels(){
+  const lp = document.getElementById('efSideL'), rp = document.getElementById('efSideR');
+  if(!lp || !rp) return;
+  const lMs = editSideElapsedMs('left'), rMs = editSideElapsedMs('right');
+  document.getElementById('efLeftTime').textContent = fmtMinSec(lMs);
+  document.getElementById('efRightTime').textContent = fmtMinSec(rMs);
+  lp.classList.toggle('running', editState.runningSide==='left');
+  lp.classList.toggle('paused', editState.runningSide!=='left' && lMs>0);
+  rp.classList.toggle('running', editState.runningSide==='right');
+  rp.classList.toggle('paused', editState.runningSide!=='right' && rMs>0);
+  document.getElementById('efLeftState').innerHTML = editState.runningSide==='left' ? '<span class="live-dot"></span>Running' : (lMs>0?'Paused':'Tap to start');
+  document.getElementById('efRightState').innerHTML = editState.runningSide==='right' ? '<span class="live-dot"></span>Running' : (rMs>0?'Paused':'Tap to start');
+  document.getElementById('efPencilL').style.display = (lMs>0 || editState.runningSide==='left') ? 'flex' : 'none';
+  document.getElementById('efPencilR').style.display = (rMs>0 || editState.runningSide==='right') ? 'flex' : 'none';
 }
 function editHomeStartTime(v){
   if(!requireBaby() || !v) return;
@@ -1208,9 +1306,17 @@ function editHomeStartTime(v){
   toast('Start time updated');
 }
 function applyDuration(){
+  const ms = (wheelValue('wheelMin')*60 + wheelValue('wheelSec')) * 1000;
+  if(durationTarget==='edit'){
+    editState[durationSide+'Ms'] = ms;                              // paused stays paused
+    if(editState.runningSide===durationSide) editState.resumedAt = Date.now(); // running keeps rolling from the new value
+    closeSheet('ov-duration');
+    renderEditBreastPanels();
+    toast('Duration updated');
+    return;
+  }
   if(!requireBaby()) return;
   const st = getBreastState(activeBaby().id);
-  const ms = (wheelValue('wheelMin')*60 + wheelValue('wheelSec')) * 1000;
   const now = Date.now();
   st[durationSide] = ms;                                   // paused stays paused
   if(st.runningSide===durationSide) st.resumedAt = now;    // running keeps rolling from the new value
@@ -1297,6 +1403,18 @@ function toggleBreastSide(babyId, side){
   renderFeedCard();
 }
 function onHomeSideTap(side){ if(!requireBaby()) return; toggleBreastSide(activeBaby().id, side); }
+function onHomeFeedNotesInput(){
+  if(!requireBaby()) return;
+  const st = getBreastState(activeBaby().id);
+  st.notes = document.getElementById('homeFeedNotes').value;
+  save();
+}
+function onFeedNotesInput(){
+  if(!requireBaby()) return;
+  const st = getBreastState(activeBaby().id);
+  st.notes = document.getElementById('feedNotes').value;
+  save();
+}
 function onSheetSideTap(side){ if(!requireBaby()) return; toggleBreastSide(activeBaby().id, side); }
 function finalizeBreastState(babyId){
   const state = getBreastState(babyId);
@@ -1316,7 +1434,9 @@ function saveBreastSession(babyId, useFeedTime){
   if(leftMs>0 && rightMs<=0) side='left';
   else if(rightMs>0 && leftMs<=0) side='right';
   const endSide = state.lastSide || (rightMs>=leftMs ? 'right' : 'left');
-  addLog({ type:'feed', sub:'breast', side, endSide, leftMin, rightMin, durationMin, timestamp: useFeedTime ? feedTimestamp(state.sessionStart||Date.now()) : (state.sessionStart||Date.now()) });
+  // leftMin/rightMin/durationMin (whole minutes) drive stats & totals elsewhere; leftMs/rightMs
+  // keep the exact timed value so a short (sub-minute) side isn't shown as 0:00 when re-opened to edit.
+  addLog({ type:'feed', sub:'breast', side, endSide, leftMin, rightMin, durationMin, leftMs, rightMs, notes:(state.notes||'').trim(), timestamp: useFeedTime ? feedTimestamp(state.sessionStart||Date.now()) : (state.sessionStart||Date.now()) });
   delete DATA.activeBreast[babyId];
   save();
   return true;
@@ -1359,6 +1479,12 @@ function renderBreastTimers(){
   document.getElementById('sheetLeftState').innerHTML = state.runningSide==='left' ? '<span class="live-dot"></span>Running' : (leftMs>0?'Paused':'Tap to start');
   document.getElementById('sheetRightState').innerHTML = state.runningSide==='right' ? '<span class="live-dot"></span>Running' : (rightMs>0?'Paused':'Tap to start');
   document.getElementById('discardSessionBtn').style.display = (leftMs>0||rightMs>0) ? 'block' : 'none';
+  const notesField = document.getElementById('feedNotesField');
+  if(notesField){
+    notesField.style.display = state.sessionStart ? 'block' : 'none';
+    const nInput = document.getElementById('feedNotes');
+    if(state.sessionStart && document.activeElement!==nInput) nInput.value = state.notes || '';
+  }
   const showL = (leftMs>0 || state.runningSide==='left') ? 'flex' : 'none';
   const showR = (rightMs>0 || state.runningSide==='right') ? 'flex' : 'none';
   document.getElementById('sheetEditL').style.display = showL;
@@ -1366,8 +1492,9 @@ function renderBreastTimers(){
 }
 function logBreastManual(side){
   if(!requireBaby()) return;
-  addLog({ type:'feed', sub:'breast', side, durationMin:null, timestamp:feedTimestamp(Date.now()) });
+  addLog({ type:'feed', sub:'breast', side, durationMin:null, notes:document.getElementById('feedNotes').value.trim(), timestamp:feedTimestamp(Date.now()) });
   feedTimeTouched=false;
+  document.getElementById('feedNotes').value='';
   toast('Feeding logged'); closeSheet('ov-feed'); renderAll();
 }
 function logBottle(){
@@ -1452,10 +1579,45 @@ function openEditLog(id){
   body += `<div class="field"><label>Time</label><input type="time" class="big-dt" id="ef_time" value="${editOrig.time}"></div>`;
   if(log.type==='feed' && log.sub==='breast'){
     title = 'Edit feeding';
-    const timed = !!(log.leftMin || log.rightMin);
     editState.side = log.side || 'left';
-    if(!timed) body += `<div class="field"><label>Side</label>${editSeg('side',[['left','Left'],['right','Right'],['both','Both']])}</div>`;
-    body += `<div class="field"><label>Minutes${timed?'':' (optional)'}</label><div class="edit-two"><div><div class="edit-sub">Left</div><input type="number" id="ef_left" min="0" inputmode="numeric" placeholder="0" value="${attr(log.leftMin||'')}"></div><div><div class="edit-sub">Right</div><input type="number" id="ef_right" min="0" inputmode="numeric" placeholder="0" value="${attr(log.rightMin||'')}"></div></div></div>`;
+    if(log.leftMs!=null || log.rightMs!=null){
+      // precise millisecond values were recorded when this entry was saved/last edited — use them
+      // directly so a sub-minute side (e.g. 2 seconds) shows its real time instead of rounding to 0:00.
+      editState.leftMs = log.leftMs||0;
+      editState.rightMs = log.rightMs||0;
+    } else {
+      // older entries only have whole-minute leftMin/rightMin (or, older still, just a total
+      // durationMin with no left/right split at all). Fall back accordingly — only substituting
+      // durationMin when leftMin/rightMin are truly absent, not when a side legitimately rounded to 0.
+      let lMin = log.leftMin||0, rMin = log.rightMin||0;
+      if(log.leftMin==null && log.rightMin==null && log.durationMin){
+        if(log.side==='right') rMin = log.durationMin;
+        else if(log.side==='both'){ lMin = Math.ceil(log.durationMin/2); rMin = Math.floor(log.durationMin/2); }
+        else lMin = log.durationMin;
+      }
+      editState.leftMs = lMin*60000;
+      editState.rightMs = rMin*60000;
+    }
+    editState.runningSide = null; editState.resumedAt = null;
+    const pencilSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg>`;
+    body += `<div class="field"><label>Duration</label></div>`;
+    body += `<div class="dual-timer">
+      <button type="button" class="side-panel${editState.leftMs>0?' paused':''}" id="efSideL" onclick="onEditSideTap('left')">
+        <div class="sp-label">Left</div>
+        <div class="sp-time" id="efLeftTime">${fmtMinSec(editState.leftMs)}</div>
+        <div class="sp-state" id="efLeftState">${editState.leftMs>0?'Paused':'Tap to start'}</div>
+        <span class="edit-pencil" id="efPencilL" style="display:${editState.leftMs>0?'flex':'none'};" role="button" aria-label="Edit left duration" onclick="openEditDurationPicker('left', event)">${pencilSvg}</span>
+      </button>
+      <button type="button" class="side-panel${editState.rightMs>0?' paused':''}" id="efSideR" onclick="onEditSideTap('right')">
+        <div class="sp-label">Right</div>
+        <div class="sp-time" id="efRightTime">${fmtMinSec(editState.rightMs)}</div>
+        <div class="sp-state" id="efRightState">${editState.rightMs>0?'Paused':'Tap to start'}</div>
+        <span class="edit-pencil" id="efPencilR" style="display:${editState.rightMs>0?'flex':'none'};" role="button" aria-label="Edit right duration" onclick="openEditDurationPicker('right', event)">${pencilSvg}</span>
+      </button>
+    </div>`;
+    body += `<p class="dual-timer-hint">Tap a side to start or stop it — tap the other side to switch. Tap the pencil to set an exact duration.</p>`;
+    body += `<div class="field"><label>Notes (optional)</label><textarea id="ef_notes">${escapeHtml(log.notes||'')}</textarea></div>`;
+    body += `<button type="button" class="btn secondary" onclick="resumeEditLogTimer()">Continue in main timer</button>`;
   } else if(log.type==='feed' && log.sub==='bottle'){
     title = 'Edit feeding';
     editState.milkType = log.milkType || 'formula';
@@ -1508,6 +1670,30 @@ async function onEditPhotosChosen(evt){
     if(url){ editPhotos.push(url); renderEditPhotos(); }
   }
 }
+function resumeEditLogTimer(){
+  const log = DATA.logs.find(l=>l.id===editingId); if(!log) return;
+  const b = activeBaby(); if(!b) return;
+  const existing = DATA.activeBreast && DATA.activeBreast[b.id];
+  if(existing && existing.sessionStart){
+    if(!confirm('A feeding timer is already running. Resuming this one will discard the current timer (its saved minutes stay as they are). Continue?')) return;
+  }
+  finalizeEditBreastState();
+  const leftMs = editState.leftMs||0, rightMs = editState.rightMs||0;
+  if(!DATA.activeBreast) DATA.activeBreast = {};
+  DATA.activeBreast[b.id] = {
+    left: leftMs, right: rightMs,
+    runningSide: null, resumedAt: null,
+    sessionStart: log.timestamp,
+    lastSide: log.side || (leftMs>=rightMs ? 'left' : 'right'),
+    notes: log.notes || ''
+  };
+  DATA.logs = DATA.logs.filter(l=>l.id!==editingId);
+  save();
+  closeSheet('ov-edit');
+  openFeedSheet();
+  setFeedType('breast');
+  toast('Timer resumed — tap a side to continue');
+}
 function saveEditLog(){
   const log = DATA.logs.find(l=>l.id===editingId); if(!log) return closeSheet('ov-edit');
   const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
@@ -1518,14 +1704,23 @@ function saveEditLog(){
     log.timestamp = new Date(y, mo-1, da, h, mi, 0, 0).getTime();
   }
   if(log.type==='feed' && log.sub==='breast'){
-    const l = Math.max(0, parseInt(val('ef_left'),10)||0), r = Math.max(0, parseInt(val('ef_right'),10)||0);
-    if(l>0 || r>0){
+    finalizeEditBreastState();
+    const lMs = editState.leftMs||0, rMs = editState.rightMs||0;
+    const l = Math.round(lMs/60000), r = Math.round(rMs/60000);
+    // which side(s) get credited is decided from the precise (second-level) time, not the
+    // rounded minutes — otherwise a side under 30s rounds to 0m and gets dropped entirely,
+    // so the color bar and side label silently ignore time that was actually recorded.
+    if(lMs>0 || rMs>0){
       log.leftMin = l; log.rightMin = r; log.durationMin = Math.max(1, l+r);
-      log.side = (l>0 && r>0) ? 'both' : (l>0 ? 'left' : 'right');
+      log.side = (lMs>0 && rMs>0) ? 'both' : (lMs>0 ? 'left' : 'right');
     } else {
       log.leftMin = 0; log.rightMin = 0; log.durationMin = null;
       log.side = editState.side || log.side || 'left';
     }
+    // keep the exact (second-precision) values in sync too, so re-opening this entry later
+    // still shows precisely what was set here rather than rounding to whole minutes.
+    log.leftMs = lMs; log.rightMs = rMs;
+    log.notes = val('ef_notes').trim();
   } else if(log.type==='feed' && log.sub==='bottle'){
     log.amount = parseFloat(val('ef_amount'))||0; log.milkType = editState.milkType; log.notes = val('ef_notes').trim();
   } else if(log.type==='feed' && log.sub==='solid'){
@@ -1730,21 +1925,29 @@ function feedingRowLabel(log){
   if(log.sub==='solid') return `Solids · ${log.food}`;
   return 'Feed';
 }
-let feedingsExpanded = false, diapersExpanded = false;
+let feedingsExpanded = false, diapersExpanded = false, feedingsOpen = true, diapersOpen = true;
 function toggleFeedingsExpanded(){ feedingsExpanded = !feedingsExpanded; renderFeedingsLog(); }
 function toggleDiapersExpanded(){ diapersExpanded = !diapersExpanded; renderDiapersLog(); }
+function toggleFeedingsOpen(){ feedingsOpen = !feedingsOpen; renderFeedingsLog(); }
+function toggleDiapersOpen(){ diapersOpen = !diapersOpen; renderDiapersLog(); }
 function renderFeedingsLog(){
   const el = document.getElementById('feedingsLog');
+  if(!el) return;
   const b = activeBaby();
   const feedsAll = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed').sort((a,c)=>c.timestamp-a.timestamp) : [];
   const allFeeds = feedsAll.filter(within24h);
+  const head = `<button class="fold-head${feedingsOpen?' open':''}" onclick="toggleFeedingsOpen()" aria-expanded="${feedingsOpen}">
+      <span><span class="feedings-log-title">Recent feedings<span class="log-window">last 24 hours</span></span>${allFeeds.length?`<span class="fold-count">${allFeeds.length}</span>`:''}</span>
+      <svg class="fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>`;
+  if(!feedingsOpen){ el.innerHTML = head; return; }
   if(!allFeeds.length){
-    el.innerHTML = `<div class="feedings-log-title">Recent feedings<span class="log-window">last 24 hours</span></div><div class="feedings-empty">${b?'No feedings in the last 24 hours':'Add a baby to start tracking'}</div>`;
+    el.innerHTML = head + `<div class="feedings-empty">${b?'No feedings in the last 24 hours':'Add a baby to start tracking'}</div>`;
     return;
   }
   const feeds = feedingsExpanded ? allFeeds : allFeeds.slice(0,5);
   const maxDur = Math.max(15, ...allFeeds.map(f=>f.durationMin||0));
-  let html = '<div class="feedings-log-title">Recent feedings<span class="log-window">last 24 hours</span></div>';
+  let html = head;
   feeds.forEach(log=>{
     const dur = log.durationMin || 0;
     const pct = Math.max(dur>0?4:0, Math.round((dur/maxDur)*100));
@@ -1763,6 +1966,7 @@ function renderFeedingsLog(){
         <span><span class="feeding-row-time">${fmtTime(log.timestamp)}</span><span class="feeding-row-type">${escapeHtml(feedingRowLabel(log))}</span></span>
         <span class="row-right"><span class="feeding-row-dur">${dur>0? fmtDuration(dur) : '—'}</span>${rowActions(log.id)}</span>
       </div>
+      ${log.notes ? `<div class="doc-notes">${escapeHtml(log.notes)}</div>` : ''}
       <div class="feeding-bar-track">${bar}</div>
     </div>`;
   });
@@ -1783,12 +1987,17 @@ function renderDiapersLog(){
   const b = activeBaby();
   const diapersAll = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='diaper').sort((a,c)=>c.timestamp-a.timestamp) : [];
   const allDiapers = diapersAll.filter(within24h);
+  const head = `<button class="fold-head${diapersOpen?' open':''}" onclick="toggleDiapersOpen()" aria-expanded="${diapersOpen}">
+      <span><span class="feedings-log-title">Recent diapers<span class="log-window">last 24 hours</span></span>${allDiapers.length?`<span class="fold-count">${allDiapers.length}</span>`:''}</span>
+      <svg class="fold-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>`;
+  if(!diapersOpen){ el.innerHTML = head; return; }
   if(!allDiapers.length){
-    el.innerHTML = `<div class="feedings-log-title">Recent diapers<span class="log-window">last 24 hours</span></div><div class="feedings-empty">${b?'No diaper changes in the last 24 hours':'Add a baby to start tracking'}</div>`;
+    el.innerHTML = head + `<div class="feedings-empty">${b?'No diaper changes in the last 24 hours':'Add a baby to start tracking'}</div>`;
     return;
   }
   const diapers = diapersExpanded ? allDiapers : allDiapers.slice(0,5);
-  let html = '<div class="feedings-log-title">Recent diapers<span class="log-window">last 24 hours</span></div>';
+  let html = head;
   diapers.forEach(log=>{
     const color = log.blowout ? 'var(--danger)' : (log.kind==='dirty' ? 'var(--rose)' : (log.kind==='both' ? 'var(--lav)' : 'var(--blue)'));
     html += `<div class="feeding-row">
@@ -1837,13 +2046,13 @@ function renderFeedCard(){
     document.getElementById('feedSessionActions').style.display='none';
     document.getElementById('homeEditL').style.display='none';
     document.getElementById('homeEditR').style.display='none';
+    document.getElementById('nextFeedInfo').style.display='none';
     return;
   }
   const feeds = DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed').sort((a,c)=>c.timestamp-a.timestamp);
   const last = feeds[0];
   if(last){
-    const end = last.timestamp + ((last.durationMin||0)*60000);
-    const mins = Math.max(0, minutesBetween(end, Date.now()));
+    const mins = Math.max(0, minutesBetween(last.timestamp, Date.now()));
     labelTextEl.textContent = 'Since last feeding';
     elapsedEl.textContent = fmtDuration(mins);
   } else {
@@ -1851,6 +2060,7 @@ function renderFeedCard(){
     elapsedEl.textContent = '—';
   }
   bigEl.textContent = lastSideBigText(last);
+  renderNextFeedCountdown(b, last);
 
   const state = getBreastState(b.id);
   const leftMs = sideElapsedMs(state,'left'), rightMs = sideElapsedMs(state,'right');
@@ -1866,8 +2076,68 @@ function renderFeedCard(){
   if(stInput && state.sessionStart && document.activeElement!==stInput && stInput.dataset.ts!==String(state.sessionStart)){
     stInput.value = localTimeValue(state.sessionStart); stInput.dataset.ts = String(state.sessionStart);
   }
+  const hNotesField = document.getElementById('homeFeedNotesField');
+  if(hNotesField){
+    hNotesField.style.display = state.sessionStart ? 'block' : 'none';
+    const hNotesInput = document.getElementById('homeFeedNotes');
+    if(state.sessionStart && document.activeElement!==hNotesInput) hNotesInput.value = state.notes || '';
+  }
   document.getElementById('homeEditL').style.display = (leftMs>0 || state.runningSide==='left') ? 'flex' : 'none';
   document.getElementById('homeEditR').style.display = (rightMs>0 || state.runningSide==='right') ? 'flex' : 'none';
+}
+function fmtCountdown(ms){
+  let s = Math.max(0, Math.round(ms/1000));
+  const h = Math.floor(s/3600); s -= h*3600;
+  const m = Math.floor(s/60); s -= m*60;
+  if(h>0) return `${h}h ${m}m`;
+  if(m>0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+function toggleNextFeedReminder(checked){
+  const b = activeBaby(); if(!b) return;
+  b.nextFeedEnabled = checked;
+  if(checked && !b.nextFeedIntervalMin) b.nextFeedIntervalMin = 120; // default 2h the first time it's turned on
+  save();
+  renderFeedCard();
+}
+function setNextFeedInterval(val){
+  const b = activeBaby(); if(!b) return;
+  b.nextFeedIntervalMin = parseInt(val,10) || 120;
+  save();
+  renderFeedCard();
+}
+function renderNextFeedCountdown(b, last){
+  const toggle = document.getElementById('nextFeedToggle');
+  const sel = document.getElementById('nextFeedIntervalSelect');
+  const infoEl = document.getElementById('nextFeedInfo');
+  const cdEl = document.getElementById('nextFeedCountdown');
+  const expEl = document.getElementById('nextFeedExpiry');
+  const on = !!b.nextFeedEnabled;
+  if(toggle && document.activeElement!==toggle) toggle.checked = on;
+  if(sel && document.activeElement!==sel) sel.value = String(b.nextFeedIntervalMin || 120);
+  sel.style.visibility = on ? 'visible' : 'hidden';
+  if(!on){
+    infoEl.style.display = 'none';
+    return;
+  }
+  infoEl.style.display = 'block';
+  if(!last){
+    cdEl.textContent = 'Log a feeding to start the countdown';
+    cdEl.classList.remove('overdue');
+    expEl.textContent = '';
+    return;
+  }
+  // countdown runs from the START of the last feeding, not from now
+  const target = last.timestamp + (b.nextFeedIntervalMin||120)*60000;
+  const diff = target - Date.now();
+  expEl.textContent = 'Due at ' + fmtTime(target);
+  if(diff > 0){
+    cdEl.textContent = 'Next feeding in ' + fmtCountdown(diff);
+    cdEl.classList.remove('overdue');
+  } else {
+    cdEl.textContent = 'Feeding due — ' + fmtCountdown(-diff) + ' overdue';
+    cdEl.classList.add('overdue');
+  }
 }
 const SVG_DROP = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6c-1-1.2-1-2.4 0-3M15 6c1-1.2 1-2.4 0-3"/><ellipse cx="4.8" cy="8.2" rx="2.2" ry="1.6" transform="rotate(-20 4.8 8.2)"/><ellipse cx="19.2" cy="8.2" rx="2.2" ry="1.6" transform="rotate(20 19.2 8.2)"/><path d="M6.5 9c0-3 2.5-5 5.5-5s5.5 2 5.5 5c0 3.5-1 6-2 8-.6 1.2-1.8 2-3.5 2s-2.9-.8-3.5-2c-1-2-2-4.5-2-8Z"/><path d="M13 6.8c1-1.4 2.9-1.6 3.9-.4.6.8.2 1.8 1 2.4.8.6 1 1.6.3 2.4-.8 1-2.5 1-3.6.3-.6-.4-.5-1.1-1.1-1.4-1.1-.5-1.6-1.4-1.2-2.4.1-.3.4-.6.7-.9Z" fill="currentColor" stroke="none" opacity="0.4"/><path d="M8.3 15.5c0-1.4 1.7-2.3 3.7-2.3s3.7.9 3.7 2.3c0 1.4-1.7 2.3-3.7 2.3s-3.7-.9-3.7-2.3Z"/><circle cx="10.6" cy="15.5" r="0.5" fill="currentColor" stroke="none"/><circle cx="13.4" cy="15.5" r="0.5" fill="currentColor" stroke="none"/><circle cx="8.7" cy="9.5" r="0.6" fill="currentColor" stroke="none"/><circle cx="15.3" cy="9.5" r="0.6" fill="currentColor" stroke="none"/></svg>';
 const SVG_BOTTLE = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="3" rx="1"/><path d="M9 6h6l1 3v10a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9l1-3Z"/><line x1="8" y1="13" x2="16" y2="13"/></svg>';
@@ -2082,13 +2352,18 @@ function renderHistory(){
   document.getElementById('todayFeedTotal').textContent = fmtDuration(todayBr.reduce((t,l)=>t+(l.leftMin||0)+(l.rightMin||0),0));
   renderWeekCalendar();
   const days = lastNDayKeys(N);
-  const feedCounts = days.map(()=>0), diaperCounts = days.map(()=>0), blowoutCounts = days.map(()=>0);
+  // every log is bucketed by the calendar day (midnight-to-midnight, local time) its
+  // timestamp falls on via dayKey() — a fixed day boundary, never a rolling 24h window.
+  const feedCounts = days.map(()=>0), diaperCounts = days.map(()=>0), blowoutCounts = days.map(()=>0), feedMinCounts = days.map(()=>0);
   if(b){
     const idxByDay = {}; days.forEach((d,i)=>idxByDay[d]=i);
     DATA.logs.filter(l=>l.babyId===b.id).forEach(l=>{
       const k = dayKey(l.timestamp);
       if(k in idxByDay){
-        if(l.type==='feed') feedCounts[idxByDay[k]]++;
+        if(l.type==='feed'){
+          feedCounts[idxByDay[k]]++;
+          if(l.sub==='breast') feedMinCounts[idxByDay[k]] += (l.leftMin||0)+(l.rightMin||0);
+        }
         if(l.type==='diaper'){
           diaperCounts[idxByDay[k]]++;
           if(l.blowout) blowoutCounts[idxByDay[k]]++;
@@ -2099,9 +2374,10 @@ function renderHistory(){
   const totalFeeds = feedCounts.reduce((a,c)=>a+c,0);
   const totalDiapers = diaperCounts.reduce((a,c)=>a+c,0);
   const totalBlowouts = blowoutCounts.reduce((a,c)=>a+c,0);
+  const totalFeedMins = feedMinCounts.reduce((a,c)=>a+c,0);
   document.getElementById('avgFeeds').textContent = (totalFeeds/N).toFixed(1);
   document.getElementById('avgDiapers').textContent = (totalDiapers/N).toFixed(1);
-  document.getElementById('avgBlowouts').textContent = (totalBlowouts/N).toFixed(1);
+  document.getElementById('avgFeedTime').textContent = fmtDuration(Math.round(totalFeedMins/N));
   document.getElementById('totalFeeds').textContent = totalFeeds;
   document.getElementById('totalDiapers').textContent = totalDiapers;
   document.getElementById('totalBlowouts').textContent = totalBlowouts;
@@ -2297,6 +2573,7 @@ function startAppForCurrentUser(){
       if(!CURRENT_USER_ID) return;
       if(document.getElementById('view-home').style.display!=='none') renderFeedCard();
       if(document.getElementById('ov-feed').classList.contains('open')) renderBreastTimers();
+      if(document.getElementById('ov-edit').classList.contains('open')) renderEditBreastPanels();
     }, 1000);
   }
 }
