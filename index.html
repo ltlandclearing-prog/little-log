@@ -289,6 +289,10 @@
   .row-edit-btn svg{ width:15px; height:15px; }
   .metric-pick-field{ margin-bottom:14px; }
   .metric-pick-field label{ display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:6px; }
+  .metric-pick-scroll{ display:flex; overflow-x:auto; gap:10px; padding:2px 2px 6px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .metric-pick-scroll::-webkit-scrollbar{ display:none; }
+  .metric-pick-btn{ flex:0 0 auto; padding:14px 20px; border-radius:999px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-family:inherit; font-size:16.5px; font-weight:700; cursor:pointer; white-space:nowrap; }
+  .metric-pick-btn.sel{ background:var(--sage); border-color:var(--sage); color:#fff; }
   .side-panel.running .edit-pencil, .feed-side-btn.running .edit-pencil{ color:var(--gold); }
   #ov-duration{ z-index:150; }
   .wheel-wrap{ position:relative; display:flex; justify-content:center; align-items:center; gap:22px; height:200px; margin:4px 0 14px; }
@@ -333,9 +337,9 @@
   .toggle-switch-cb input:checked + .toggle-slider:before{ transform:translateX(13px); }
   .next-feed-select{ font-family:inherit; font-size:12px; font-weight:700; color:var(--sage); background:none; border:1px solid var(--border); border-radius:999px; padding:2px 7px; flex-shrink:0; }
   .next-feed-info{ text-align:center; margin-top:4px; }
-  .next-feed-count{ font-size:12.5px; font-weight:600; color:var(--muted); }
+  .next-feed-count{ font-size:15.625px; font-weight:600; color:#000; }
   .next-feed-count.overdue{ color:var(--danger); }
-  .next-feed-expiry{ font-size:12.5px; font-weight:600; color:var(--muted); }
+  .next-feed-expiry{ font-size:15.625px; font-weight:600; color:#000; }
   .feed-more-link{ display:block; text-align:center; margin-top:12px; }
 
   /* ---- Recent feedings bar log ---- */
@@ -817,9 +821,9 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-head"><h2 id="historyMetricsSheetTitle">Choose stats</h2><button class="sheet-close" onclick="closeSheet('ov-history-metrics')">✕</button></div>
-    <div class="metric-pick-field"><label>First stat</label><select id="historyMetricSel0"></select></div>
-    <div class="metric-pick-field"><label>Second stat</label><select id="historyMetricSel1"></select></div>
-    <div class="metric-pick-field"><label>Third stat</label><select id="historyMetricSel2"></select></div>
+    <div class="metric-pick-field"><label>First stat</label><div class="metric-pick-scroll" id="historyMetricSeg0"></div></div>
+    <div class="metric-pick-field"><label>Second stat</label><div class="metric-pick-scroll" id="historyMetricSeg1"></div></div>
+    <div class="metric-pick-field"><label>Third stat</label><div class="metric-pick-scroll" id="historyMetricSeg2"></div></div>
     <button class="btn" onclick="saveHistoryMetrics()">Save</button>
   </div>
 </div>
@@ -2392,6 +2396,7 @@ const HISTORY_SCOPES = {
   total: { field:'historyMetricsTotal', defaults:['feeds','diapers','blowouts'],    labelRow:'historyTotalLabel', valueRow:'historyTotalValue', suffix:'', title:'Choose totals stats' },
 };
 let historyMetricsEditScope = 'avg';
+let historyMetricsPending = ['feeds','diapers','feedMins'];
 function formatStatValue(m, total, scope){
   if(scope==='avg'){
     return m.kind==='duration' ? fmtDuration(Math.round(total/getHistoryDays())) : (total/getHistoryDays()).toFixed(1);
@@ -2404,20 +2409,24 @@ function getHistoryMetricSlots(scope){
   while(m.length<3) m.push(cfg.defaults[m.length]);
   return m.map((k,i)=> STAT_METRICS.some(sm=>sm.key===k) ? k : cfg.defaults[i]);
 }
+function renderMetricPickSeg(i){
+  const el = document.getElementById('historyMetricSeg'+i);
+  el.innerHTML = STAT_METRICS.map(m=>`<button type="button" class="metric-pick-btn${historyMetricsPending[i]===m.key?' sel':''}" onclick="pickHistoryMetric(${i},'${m.key}')">${escapeHtml(m.label)}</button>`).join('');
+}
+function pickHistoryMetric(i, key){
+  historyMetricsPending[i] = key;
+  renderMetricPickSeg(i);
+}
 function openHistoryMetricsSheet(scope){
   historyMetricsEditScope = scope;
   document.getElementById('historyMetricsSheetTitle').textContent = HISTORY_SCOPES[scope].title;
-  const slots = getHistoryMetricSlots(scope);
-  [0,1,2].forEach(i=>{
-    const sel = document.getElementById('historyMetricSel'+i);
-    sel.innerHTML = STAT_METRICS.map(m=>`<option value="${m.key}">${escapeHtml(m.label)}</option>`).join('');
-    sel.value = slots[i];
-  });
+  historyMetricsPending = getHistoryMetricSlots(scope);
+  [0,1,2].forEach(i=>renderMetricPickSeg(i));
   document.getElementById('ov-history-metrics').classList.add('open');
 }
 function saveHistoryMetrics(){
   const cfg = HISTORY_SCOPES[historyMetricsEditScope];
-  DATA[cfg.field] = [0,1,2].map(i=>document.getElementById('historyMetricSel'+i).value);
+  DATA[cfg.field] = historyMetricsPending.slice(0,3);
   save();
   closeSheet('ov-history-metrics');
   renderHistory();
