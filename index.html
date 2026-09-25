@@ -127,6 +127,10 @@
   .section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
   .section-title{ font-size:15px; font-weight:600; color:var(--muted); }
   .link-btn{ background:none;border:none;color:var(--sage); font-size:13.5px; font-weight:600; cursor:pointer; padding:4px; font-family:inherit;}
+  .feed-action-btn{ font-size:18px; font-weight:700; padding:10px 20px; border:2px solid var(--sage) !important; border-radius:14px; background:var(--surface); white-space:nowrap; transition:background .1s ease, color .1s ease; }
+  .feed-action-btn:active, .feed-action-btn.pressed{ background:var(--sage) !important; color:#fff !important; }
+  .feed-discard-btn:active, .feed-discard-btn.pressed{ background:var(--danger) !important; border-color:var(--danger) !important; color:#fff !important; }
+  .feed-action-group{ display:flex; gap:12px; flex-shrink:0; }
 
   .hero{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); margin-top:18px; }
   .hero-age{ font-size:13px; color:var(--muted); margin:0 0 2px; }
@@ -135,7 +139,9 @@
   .stat{ background:var(--surface-2); border-radius:var(--radius-sm); padding:12px 10px; text-align:left; }
   .stat .label{ font-size:11.5px; color:var(--muted); font-weight:600; }
   .stat .value{ font-size:17px; font-weight:700; margin-top:3px; font-family:'Quicksand',sans-serif; }
-  .home-today-value{ font-size:25.5px; }
+  .home-today-value{ font-size:33.15px; }
+  #heroTodayRow .label{ font-size:14.95px; }
+  #heroTodayRow .stat-sub{ font-size:14.3px; }
   .stat .stat-sub{ font-size:11px; color:var(--muted); margin-top:2px; font-weight:600; }
 
   .quick-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
@@ -215,6 +221,7 @@
   .photo-add span{ font-size:22px; line-height:1; }
   .data-note{ font-size:12px; font-weight:600; color:var(--muted); text-align:center; margin:12px 4px 0; line-height:1.4; }
   #historyTodayRow .stat{ border:2px solid var(--sage); }
+  #heroTodayRow .stat{ border:2px solid var(--sage); }
   .row-right{ display:inline-flex; align-items:center; gap:2px; }
   .row-actions{ display:inline-flex; gap:0; margin-left:6px; }
   .row-act{ width:30px; height:30px; border:none; background:transparent; color:var(--muted); display:inline-flex; align-items:center; justify-content:center; border-radius:50%; cursor:pointer; padding:0; }
@@ -323,6 +330,7 @@
   .feed-side-btn.running .fsb-time, .feed-side-btn.running .fsb-label{ color:var(--gold); }
   .feed-side-btn.paused{ border-color:var(--sage); }
   .feed-side-btn .live-dot{ position:absolute; top:10px; left:12px; width:6px;height:6px;border-radius:50%; background:var(--gold); animation:pulse 1.4s infinite; }
+  .fsb-lastused{ font-size:10px; font-weight:700; color:var(--sage); margin-top:3px; letter-spacing:.03em; text-transform:uppercase; }
   .feed-session-actions{ display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-top:12px; }
   .start-time-chip{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted); }
   .start-time-chip input{ font-family:inherit; font-size:14px; font-weight:600; color:var(--text); background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:4px 6px; }
@@ -411,18 +419,22 @@
       <button class="feed-side-btn" id="homeLeftBtn" onclick="onHomeSideTap('left')">
         <div class="fsb-label">Left</div>
         <div class="fsb-time" id="homeLeftTime">Start</div>
+        <div class="fsb-lastused" id="homeLeftLastUsed" style="display:none;">Last used</div>
         <span class="edit-pencil" id="homeEditL" role="button" aria-label="Edit left duration" onclick="openDurationPicker('left', event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></span>
       </button>
       <button class="feed-side-btn" id="homeRightBtn" onclick="onHomeSideTap('right')">
         <div class="fsb-label">Right</div>
         <div class="fsb-time" id="homeRightTime">Start</div>
+        <div class="fsb-lastused" id="homeRightLastUsed" style="display:none;">Last used</div>
         <span class="edit-pencil" id="homeEditR" role="button" aria-label="Edit right duration" onclick="openDurationPicker('right', event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.83 2.83 0 0 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/></svg></span>
       </button>
     </div>
     <div class="feed-session-actions" id="feedSessionActions" style="display:none;">
+      <div class="feed-action-group">
+        <button class="link-btn feed-action-btn" onclick="pressFlash(this, saveBreastSessionFromHome)">Save feeding</button>
+        <button class="link-btn feed-action-btn feed-discard-btn" style="color:var(--danger);" onclick="pressFlash(this, discardBreastSessionFromHome)">Discard</button>
+      </div>
       <label class="start-time-chip">Started <input type="time" id="homeStartTime" onchange="editHomeStartTime(this.value)"></label>
-      <button class="link-btn" onclick="saveBreastSessionFromHome()">Save feeding</button>
-      <button class="link-btn" style="color:var(--danger);" onclick="discardBreastSessionFromHome()">Discard</button>
     </div>
     <div class="field" id="homeFeedNotesField" style="display:none;margin-top:2px;"><label>Notes</label><textarea id="homeFeedNotes" placeholder="How did it go?" oninput="onHomeFeedNotesInput()"></textarea></div>
     <div class="next-feed-row" id="nextFeedRow">
@@ -481,7 +493,7 @@
   <div class="hero">
     <p class="hero-age" id="heroAge">—</p>
     <h1 class="hero-name" id="heroName">Add a baby to begin</h1>
-    <div class="stat-row">
+    <div class="stat-row" id="heroTodayRow">
       <div class="stat"><div class="label">Feedings today</div><div class="value home-today-value" id="statFeeds">0</div><div class="stat-sub" id="statFeedsLR"></div><div class="stat-sub" id="statFeedsTotal"></div></div>
       <div class="stat"><div class="label">Diapers today</div><div class="value home-today-value" id="statDiapers">0</div><div class="stat-sub" id="statDiapersNo"></div><div class="stat-sub" id="statDiapersBlowouts"></div><div class="stat-sub" id="statDiapersTotal"></div></div>
     </div>
@@ -537,11 +549,15 @@
     </div>
   </div>
   <div class="section">
-    <div class="section-head"><div class="section-title">Feedings · last 7 days</div></div>
+    <div class="section-head"><div class="section-title">Feedings · last <input type="number" id="weekCalDays" class="days-input" style="width:52px;font-size:15px;padding:1px 6px;" min="1" max="30" inputmode="numeric" value="7" oninput="setWeekCalDays(this.value)" onchange="commitWeekCalDays(this)" aria-label="Number of days to show"> days</div></div>
     <div class="graph-card">
-      <svg id="weekCalSvg" class="week-cal" viewBox="0 0 340 712" role="img" aria-label="Calendar chart of feedings over the last 7 days"></svg>
+      <svg id="weekCalSvg" class="week-cal" viewBox="0 0 340 712" role="img" aria-label="Calendar chart of feedings over the recent days"></svg>
       <div class="week-legend"><span><i style="background:var(--sage)"></i>Left</span><span><i style="background:var(--blue)"></i>Right</span><span><i style="background:var(--gold)"></i>Bottle</span><span><i style="background:var(--lav)"></i>Solids</span></div>
       <div class="week-info" id="weekCalInfo">Tap a feeding for details</div>
+      <div class="stat-row" style="grid-template-columns:repeat(2,1fr);margin-top:10px;">
+        <div class="stat"><div class="label">Avg start time</div><div class="value" id="weekCalAvgStart">—</div><div class="stat-sub" id="weekCalStartTrend"></div></div>
+        <div class="stat"><div class="label">Avg time between</div><div class="value" id="weekCalAvgGap">—</div><div class="stat-sub" id="weekCalGapTrend"></div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -855,6 +871,13 @@
 <script>
 /* ---------------- Storage (multi-user) ---------------- */
 const USERS_KEY = 'littlelog:users';
+document.addEventListener('touchstart', function(){}, {passive:true}); // enables :active press states on iOS
+function pressFlash(el, fn){
+  // shows the "lit up" state briefly before running the action, so a quick tap still flashes
+  // even though the action itself hides the button right away
+  el.classList.add('pressed');
+  setTimeout(()=>{ el.classList.remove('pressed'); fn(); }, 130);
+}
 const ACTIVE_USER_KEY = 'littlelog:activeUser';
 const LEGACY_STORE_KEY = 'littlelog:data:v1';
 const IDB_NAME = 'littlelog-db', IDB_STORE = 'kv';
@@ -2124,6 +2147,18 @@ function renderFeedCard(){
   }
   document.getElementById('homeEditL').style.display = (leftMs>0 || state.runningSide==='left') ? 'flex' : 'none';
   document.getElementById('homeEditR').style.display = (rightMs>0 || state.runningSide==='right') ? 'flex' : 'none';
+  // when no session is in progress, flag whichever side was used last time so it's easy to alternate
+  const luL = document.getElementById('homeLeftLastUsed'), luR = document.getElementById('homeRightLastUsed');
+  const idle = !state.runningSide && leftMs===0 && rightMs===0;
+  const lastBreastSide = idle ? getLastBreastSide(feeds) : null;
+  luL.style.display = lastBreastSide==='left' ? 'block' : 'none';
+  luR.style.display = lastBreastSide==='right' ? 'block' : 'none';
+}
+function getLastBreastSide(feeds){
+  const lb = feeds.find(l=>l.sub==='breast');
+  if(!lb) return null;
+  if(lb.side==='both') return lb.endSide==='right' ? 'right' : 'left';
+  return lb.side==='right' ? 'right' : (lb.side==='left' ? 'left' : null);
 }
 function fmtCountdown(ms){
   let s = Math.max(0, Math.round(ms/1000));
@@ -2241,6 +2276,18 @@ function setHistoryDays(v){
   renderHistory();
 }
 function commitHistoryDays(el){ el.value = getHistoryDays(); }
+function getWeekCalDays(){
+  const n = parseInt(DATA.weekCalDays, 10);
+  return (n>=1 && n<=30) ? n : 7;
+}
+function setWeekCalDays(v){
+  const n = parseInt(v, 10);
+  if(!(n>=1)) return;                       // ignore empty/invalid while typing
+  DATA.weekCalDays = Math.min(30, n);
+  save();
+  renderWeekCalendar();
+}
+function commitWeekCalDays(el){ el.value = getWeekCalDays(); }
 function lastNDayKeys(n){
   const days=[]; const today=new Date(); today.setHours(0,0,0,0);
   for(let i=n-1;i>=0;i--){ const d=new Date(today); d.setDate(d.getDate()-i); days.push(d.getTime()); }
@@ -2260,15 +2307,33 @@ function showWeekInfo(id){
   const dur = l.durationMin ? ' · '+fmtDuration(l.durationMin) : '';
   document.getElementById('weekCalInfo').textContent = `${d}, ${fmtTime(l.timestamp)} · ${feedingRowLabel(l)}${dur}`;
 }
+function circularMeanMinutes(timestamps){
+  // clock time wraps at midnight, so a plain average would pull 11pm and 1am toward noon;
+  // averaging as angles around a 24h circle avoids that.
+  let sumSin=0, sumCos=0;
+  timestamps.forEach(ts=>{
+    const dt = new Date(ts);
+    const minOfDay = dt.getHours()*60 + dt.getMinutes() + dt.getSeconds()/60;
+    const angle = minOfDay/1440*2*Math.PI;
+    sumSin += Math.sin(angle); sumCos += Math.cos(angle);
+  });
+  let meanAngle = Math.atan2(sumSin/timestamps.length, sumCos/timestamps.length);
+  if(meanAngle<0) meanAngle += 2*Math.PI;
+  return meanAngle/(2*Math.PI)*1440;
+}
 function renderWeekCalendar(){
   const svg = document.getElementById('weekCalSvg'); if(!svg) return;
+  const daysInput = document.getElementById('weekCalDays');
+  const N = getWeekCalDays();
+  if(daysInput && document.activeElement!==daysInput) daysInput.value = N;
   const b = activeBaby();
-  const W=340, GL=32, PR=6, T=30, HH=28, colW=(W-GL-PR)/7, bodyH=24*HH;
-  const days = lastNDayKeys(7);
+  const W=340, GL=32, PR=6, T=30, HH=28, colW=(W-GL-PR)/N, bodyH=24*HH;
+  const days = lastNDayKeys(N);
   const idx = {}; days.forEach((d,i)=>idx[d]=i);
+  const todayCol = N-1;
   let out = '';
   // today column tint
-  out += `<rect x="${GL+6*colW}" y="${T}" width="${colW}" height="${bodyH}" fill="var(--sage-soft)" opacity="0.55"/>`;
+  out += `<rect x="${GL+todayCol*colW}" y="${T}" width="${colW}" height="${bodyH}" fill="var(--sage-soft)" opacity="0.55"/>`;
   // hour gridlines + labels every 3 hours
   for(let h=0; h<=24; h+=3){
     const y = T + h*HH;
@@ -2280,14 +2345,61 @@ function renderWeekCalendar(){
   days.forEach((d,i)=>{
     const x = GL + i*colW, dt = new Date(d);
     out += `<line x1="${x}" y1="${T}" x2="${x}" y2="${T+bodyH}" stroke="var(--border)" stroke-width="1"/>`;
-    const wd = dt.toLocaleDateString([], {weekday:'short'});
-    out += `<text x="${x+colW/2}" y="12" font-size="9.5" font-weight="${i===6?800:600}" text-anchor="middle" fill="${i===6?'var(--text)':'var(--muted)'}">${wd}</text>`;
-    out += `<text x="${x+colW/2}" y="24" font-size="9.5" font-weight="${i===6?800:600}" text-anchor="middle" fill="${i===6?'var(--text)':'var(--muted)'}">${dt.getDate()}</text>`;
+    const wd = dt.toLocaleDateString([], {weekday: N>14 ? 'narrow' : 'short'});
+    const headFont = N>14 ? 8 : 9.5;
+    out += `<text x="${x+colW/2}" y="12" font-size="${headFont}" font-weight="${i===todayCol?800:600}" text-anchor="middle" fill="${i===todayCol?'var(--text)':'var(--muted)'}">${wd}</text>`;
+    out += `<text x="${x+colW/2}" y="24" font-size="${headFont}" font-weight="${i===todayCol?800:600}" text-anchor="middle" fill="${i===todayCol?'var(--text)':'var(--muted)'}">${dt.getDate()}</text>`;
   });
   out += `<line x1="${W-PR}" y1="${T}" x2="${W-PR}" y2="${T+bodyH}" stroke="var(--border)" stroke-width="1"/>`;
   // feedings (a feeding that runs past midnight continues at the top of the next day)
-  const feeds = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed' && l.timestamp >= days[0]-DAY_MS && l.timestamp < days[6]+DAY_MS) : [];
+  const feeds = b ? DATA.logs.filter(l=>l.babyId===b.id && l.type==='feed' && l.timestamp >= days[0]-DAY_MS && l.timestamp < days[todayCol]+DAY_MS) : [];
   const drawn = feeds.filter(l=>dayKey(l.timestamp) in idx).length;
+  // average start time (circular mean, since clock time wraps at midnight) + average gap between session starts
+  const startEl = document.getElementById('weekCalAvgStart'), gapEl = document.getElementById('weekCalAvgGap');
+  const startTrendEl = document.getElementById('weekCalStartTrend'), gapTrendEl = document.getElementById('weekCalGapTrend');
+  if(startEl && gapEl){
+    if(feeds.length){
+      const meanMins = circularMeanMinutes(feeds.map(l=>l.timestamp));
+      const fakeDt = new Date(); fakeDt.setHours(0,0,0,0); fakeDt.setMinutes(Math.round(meanMins));
+      startEl.textContent = fmtTime(fakeDt.getTime());
+    } else startEl.textContent = '—';
+    // gaps only count consecutive feedings within the same day (first entry to last entry that
+    // day) so the overnight stretch between the last feeding of one day and the first of the
+    // next — i.e. sleep — never gets averaged in as a "gap between feedings"
+    const byDay = {};
+    feeds.forEach(l=>{ const k=dayKey(l.timestamp); (byDay[k]=byDay[k]||[]).push(l.timestamp); });
+    const gaps = [];
+    Object.keys(byDay).forEach(k=>{
+      const arr = byDay[k].sort((a,c)=>a-c);
+      for(let i=1;i<arr.length;i++) gaps.push({time:arr[i], val:arr[i]-arr[i-1]});
+    });
+    gaps.sort((a,c)=>a.time-c.time);
+    if(gaps.length){
+      const avgGapMins = Math.round(gaps.reduce((t,g)=>t+g.val,0)/gaps.length/60000);
+      gapEl.textContent = fmtDuration(avgGapMins);
+    } else gapEl.textContent = '—';
+    // trends: compare the earlier half of the window's sessions against the more recent half
+    if(startTrendEl){
+      if(feeds.length>=4){
+        const sortedFeeds = feeds.slice().sort((a,c)=>a.timestamp-c.timestamp);
+        const mid = Math.floor(sortedFeeds.length/2);
+        const m1 = circularMeanMinutes(sortedFeeds.slice(0,mid).map(l=>l.timestamp));
+        const m2 = circularMeanMinutes(sortedFeeds.slice(mid).map(l=>l.timestamp));
+        const diff = ((m2-m1+720)%1440+1440)%1440-720; // + = later, - = earlier
+        const absMin = Math.round(Math.abs(diff));
+        startTrendEl.textContent = absMin<3 ? 'Stable' : `Trending ${diff>0?'later':'earlier'} by ${fmtDuration(absMin)}`;
+      } else startTrendEl.textContent = '';
+    }
+    if(gapTrendEl){
+      if(gaps.length>=4){
+        const gmid = Math.floor(gaps.length/2);
+        const avg = arr=>arr.reduce((a,g)=>a+g.val,0)/arr.length;
+        const gdiffMs = avg(gaps.slice(gmid)) - avg(gaps.slice(0,gmid));
+        const gdiffMin = Math.round(Math.abs(gdiffMs)/60000);
+        gapTrendEl.textContent = gdiffMin<3 ? 'Stable' : `Trending ${gdiffMs<0?'closer together':'farther apart'} by ${fmtDuration(gdiffMin)}`;
+      } else gapTrendEl.textContent = '';
+    }
+  }
   const rectFor = (col, cursor, mins, color, id, minH)=>{
     const dt = new Date(cursor);
     const minOfDay = dt.getHours()*60 + dt.getMinutes() + dt.getSeconds()/60;
@@ -2319,7 +2431,8 @@ function renderWeekCalendar(){
       }
     });
   });
-  if(!drawn && !feeds.length) out += `<text x="${(GL+W-PR)/2}" y="${T+bodyH/2}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--muted)">No feedings in the last 7 days</text>`;
+  if(!drawn && !feeds.length) out += `<text x="${(GL+W-PR)/2}" y="${T+bodyH/2}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--muted)">No feedings in the last ${N} day${N===1?'':'s'}</text>`;
+  svg.setAttribute('aria-label', `Calendar chart of feedings over the last ${N} day${N===1?'':'s'}`);
   svg.innerHTML = out;
 }
 function movingAverage(arr, windowSize){
