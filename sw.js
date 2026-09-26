@@ -1,4 +1,4 @@
-const CACHE = 'little-log-v58';
+const CACHE = 'little-log-v59';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {

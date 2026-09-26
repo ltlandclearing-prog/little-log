@@ -770,6 +770,7 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-head"><h2>Diaper</h2><button class="sheet-close" onclick="closeSheet('ov-diaper')">✕</button></div>
+    <div class="field"><label>Date</label><input type="date" class="big-dt" id="diaperDate"></div>
     <div class="field"><label>Time</label><input type="time" id="diaperTime"></div>
     <div class="field"><label>Type</label>
       <div class="seg" id="diaperTypeSeg">
@@ -1584,6 +1585,7 @@ function openDiaperSheet(){
   if(!requireBaby()) return;
   setBlowout(false);
   setRash(false);
+  document.getElementById('diaperDate').value = localDateValue(Date.now());
   document.getElementById('diaperTime').value = localTimeValue(Date.now());
   document.getElementById('ov-diaper').classList.add('open');
 }
@@ -1592,11 +1594,12 @@ function setBlowout(v){ diaperBlowout=v; document.getElementById('blowoutToggle'
 function setRash(v){ diaperRash=v; document.getElementById('rashToggle').classList.toggle('on', v); }
 function logDiaper(){
   const notes = document.getElementById('diaperNotes').value.trim();
+  const dateVal = document.getElementById('diaperDate').value;
   const timeVal = document.getElementById('diaperTime').value;
   let timestamp = Date.now();
   if(timeVal){
     const [h,m] = timeVal.split(':').map(Number);
-    const d = new Date();
+    const d = dateVal ? (()=>{ const [y,mo,da]=dateVal.split('-').map(Number); return new Date(y,mo-1,da); })() : new Date();
     d.setHours(h, m, 0, 0);
     timestamp = d.getTime();
   }
